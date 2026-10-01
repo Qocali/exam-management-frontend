@@ -1,0 +1,749 @@
+<title>İmtahan proqramı</title>
+<meta name="description" content="İmtahan proqramının interaktiv dizayn prototipi (Tailwind CSS, nümunə məlumat)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,600;7..72,700&display=swap">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          paper: 'var(--paper)', surface: 'var(--surface)', line: 'var(--line)',
+          fg: 'var(--fg)', muted: 'var(--muted)', ink: 'var(--ink)', 'ink-soft': 'var(--ink-soft)',
+          'on-ink': 'var(--on-ink)', pen: 'var(--pen)', 'pen-soft': 'var(--pen-soft)',
+        },
+        fontFamily: {
+          display: 'var(--font-display)', sans: 'var(--font-body)',
+          mono: 'var(--font-mono)', hand: 'var(--font-hand)',
+        },
+      },
+    },
+  };
+</script>
+<style>
+  /* Layout: sinif jurnalı — sol tərəfdə vərəq kimi naviqasiya, əsas sahədə dəftər xətli başlıq və cədvəllər. */
+  :root {
+    --paper: #f4f7fb;      /* soyuq ağ, göyə meyilli */
+    --surface: #ffffff;
+    --line: #d7dfea;
+    --fg: #172033;
+    --muted: #5a6579;
+    --ink: #2140a8;        /* məktəb mürəkkəbi */
+    --ink-soft: #e5ebfa;
+    --on-ink: #ffffff;
+    --pen: #c0352c;        /* müəllimin qırmızı qələmi */
+    --pen-soft: #fbe6e3;
+    --rule: #dbe5f3;
+    --margin: #e9a49d;
+
+    --s5-bg: #dcf3e2; --s5-fg: #11692f;
+    --s4-bg: #dceff5; --s4-fg: #0d566b;
+    --s3-bg: #fbf0cc; --s3-fg: #7a5600;
+    --s2-bg: #fde3d3; --s2-fg: #94400b;
+    --s1-bg: #fadcdc; --s1-fg: #a01d1d;
+
+    --font-display: 'Literata', Georgia, 'Times New Roman', serif;
+    --font-body: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', Consolas, monospace;
+    --font-hand: 'Caveat', 'Segoe Print', cursive;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #0e131b; --surface: #151c27; --line: #263144; --fg: #e4e9f2; --muted: #95a1b4;
+      --ink: #91a9ff; --ink-soft: #1d2846; --on-ink: #0e1630; --pen: #ff8a7e; --pen-soft: #3a1c1a;
+      --rule: #1c2533; --margin: #5a2a27;
+      --s5-bg: #173b24; --s5-fg: #9fe4b3; --s4-bg: #143640; --s4-fg: #9fdcec;
+      --s3-bg: #3d3110; --s3-fg: #f3d581; --s2-bg: #45230f; --s2-fg: #f7bb95;
+      --s1-bg: #4a1919; --s1-fg: #f6a9a9;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #0e131b; --surface: #151c27; --line: #263144; --fg: #e4e9f2; --muted: #95a1b4;
+    --ink: #91a9ff; --ink-soft: #1d2846; --on-ink: #0e1630; --pen: #ff8a7e; --pen-soft: #3a1c1a;
+    --rule: #1c2533; --margin: #5a2a27;
+    --s5-bg: #173b24; --s5-fg: #9fe4b3; --s4-bg: #143640; --s4-fg: #9fdcec;
+    --s3-bg: #3d3110; --s3-fg: #f3d581; --s2-bg: #45230f; --s2-fg: #f7bb95;
+    --s1-bg: #4a1919; --s1-fg: #f6a9a9;
+  }
+
+  html, body { height: 100%; }
+  body { background: var(--paper); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
+  h1, h2, h3 { text-wrap: balance; }
+  .tnum { font-variant-numeric: tabular-nums; }
+  .eyebrow { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; color: var(--muted); }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  /* Dəftər xətli başlıq: qırmızı haşiyə xətti + mavi sətirlər */
+  .ruled {
+    background-image:
+      linear-gradient(to right, transparent 2.25rem, var(--margin) 2.25rem, var(--margin) calc(2.25rem + 1px), transparent calc(2.25rem + 1px)),
+      repeating-linear-gradient(to bottom, transparent 0 31px, var(--rule) 31px 32px);
+    padding-left: 3.25rem;
+    line-height: 32px;
+  }
+
+  /* Qiymət — jurnal xanasına qələmlə yazılmış rəqəm */
+  .grade {
+    display: inline-grid; place-items: center; width: 2.25rem; height: 2.25rem;
+    font-family: var(--font-hand); font-weight: 700; font-size: 1.75rem; line-height: 1;
+    background: var(--g-bg); color: var(--g-fg); border-radius: 4px;
+  }
+  [data-score="5"] { --g-bg: var(--s5-bg); --g-fg: var(--s5-fg); }
+  [data-score="4"] { --g-bg: var(--s4-bg); --g-fg: var(--s4-fg); }
+  [data-score="3"] { --g-bg: var(--s3-bg); --g-fg: var(--s3-fg); }
+  [data-score="2"] { --g-bg: var(--s2-bg); --g-fg: var(--s2-fg); }
+  [data-score="1"] { --g-bg: var(--s1-bg); --g-fg: var(--s1-fg); }
+
+  .score-pick input { position: absolute; opacity: 0; pointer-events: none; }
+  .score-pick label { cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--muted); }
+  .score-pick input:checked + label { background: var(--g-bg); color: var(--g-fg); border-color: var(--g-fg); }
+  .score-pick input:focus-visible + label { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 13px; font-weight: 500; color: var(--muted); }
+  .control {
+    width: 100%; border: 1px solid var(--line); border-radius: 6px; background: var(--surface);
+    color: var(--fg); padding: 8px 10px; font: inherit;
+  }
+  .control:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px var(--ink-soft); }
+  .control:disabled { background: var(--paper); color: var(--muted); }
+  .control[aria-invalid="true"] { border-color: var(--pen); }
+  .hint { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+  .err { font-size: 12px; color: var(--pen); min-height: 0; }
+  .err:empty { display: none; }
+
+  dialog { border: 1px solid var(--line); border-radius: 10px; padding: 0; background: var(--surface); color: var(--fg); width: min(600px, calc(100vw - 32px)); }
+  dialog::backdrop { background: rgb(10 16 30 / .45); }
+
+  .nav-btn[aria-current="page"] { background: var(--ink-soft); color: var(--ink); font-weight: 600; }
+  .row-actions button { color: var(--muted); }
+  .row-actions button:hover { color: var(--ink); background: var(--ink-soft); }
+  .row-actions button.danger:hover { color: var(--pen); background: var(--pen-soft); }
+
+  #toast { transition: opacity .2s, transform .2s; }
+  #toast[hidden] { display: block !important; opacity: 0; transform: translateY(8px); pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
+</style>
+
+<div class="min-h-full md:flex">
+  <!-- Sol panel (desktop) -->
+  <aside class="hidden md:flex md:w-64 shrink-0 flex-col gap-6 border-r border-line bg-surface px-4 py-6 sticky top-0 h-screen">
+    <div class="flex items-center gap-3 px-2">
+      <span class="grid place-items-center w-10 h-10 rounded-md bg-ink text-on-ink font-hand text-2xl font-bold">5</span>
+      <div>
+        <p class="font-display font-bold text-[17px] leading-tight">İmtahan proqramı</p>
+        <p class="text-xs text-muted">Orta məktəb · nəticələrin qeydiyyatı</p>
+      </div>
+    </div>
+    <nav class="flex flex-col gap-1" aria-label="Əsas naviqasiya" id="nav-desktop"></nav>
+    <p class="mt-auto rounded-md border border-dashed border-line px-3 py-2 text-xs text-muted">
+      Dizayn prototipi. Məlumatlar nümunədir (backend seed data), dəyişikliklər yalnız bu səhifədə saxlanılır.
+    </p>
+  </aside>
+
+  <div class="flex-1 min-w-0">
+    <!-- Mobil başlıq -->
+    <header class="md:hidden sticky z-10 border-b border-line bg-surface px-4 pt-3" style="top: env(safe-area-inset-top, 0px)">
+      <p class="font-display font-bold">İmtahan proqramı <span class="ml-1 text-xs font-sans font-normal text-muted">prototip</span></p>
+      <nav class="mt-2 flex gap-1 overflow-x-auto pb-2" aria-label="Əsas naviqasiya" id="nav-mobile"></nav>
+    </header>
+
+    <main id="view" class="mx-auto max-w-6xl px-4 md:px-8 py-6 md:py-8"></main>
+  </div>
+</div>
+
+<dialog id="form-dialog" aria-labelledby="form-title"></dialog>
+<dialog id="confirm-dialog" aria-labelledby="confirm-title"></dialog>
+<div id="toast" role="status" aria-live="polite" hidden
+     class="fixed bottom-4 right-4 left-4 sm:left-auto z-50 max-w-sm rounded-md bg-fg text-paper px-4 py-3 text-sm shadow-lg"></div>
+
+<script>
+(() => {
+  // ---------- Nümunə məlumat (ExamManagement.Infrastructure/Persistence/SeedData.cs) ----------
+  const state = {
+    route: 'home',
+    lessons: [
+      { code: 'RIY', name: 'Riyaziyyat', classNumber: 9, teacherFirstName: 'Elnur', teacherLastName: 'Məmmədov' },
+      { code: 'FIZ', name: 'Fizika', classNumber: 9, teacherFirstName: 'Səbinə', teacherLastName: 'Əliyeva' },
+      { code: 'KIM', name: 'Kimya', classNumber: 10, teacherFirstName: 'Rəşad', teacherLastName: 'Hüseynov' },
+      { code: 'ADE', name: 'Azərbaycan ədəbiyyatı', classNumber: 10, teacherFirstName: 'Günay', teacherLastName: 'Quliyeva' },
+    ],
+    students: [
+      { number: 10001, firstName: 'Aysel', lastName: 'Həsənova', classNumber: 9 },
+      { number: 10002, firstName: 'Tural', lastName: 'İsmayılov', classNumber: 9 },
+      { number: 10003, firstName: 'Nərmin', lastName: 'Babayeva', classNumber: 10 },
+      { number: 10004, firstName: 'Orxan', lastName: 'Cəfərov', classNumber: 10 },
+    ],
+    exams: [
+      { id: 1, lessonCode: 'RIY', studentNumber: 10001, examDate: '2026-05-15', score: 5 },
+      { id: 2, lessonCode: 'FIZ', studentNumber: 10001, examDate: '2026-05-20', score: 4 },
+      { id: 3, lessonCode: 'RIY', studentNumber: 10002, examDate: '2026-05-15', score: 3 },
+      { id: 4, lessonCode: 'KIM', studentNumber: 10003, examDate: '2026-05-18', score: 5 },
+      { id: 5, lessonCode: 'ADE', studentNumber: 10004, examDate: '2026-05-22', score: 4 },
+    ],
+    nextExamId: 6,
+    f: { lq: '', lc: '', sq: '', sc: '', el: '', es: '', ef: '', et: '' },
+  };
+
+  // ---------- Köməkçilər ----------
+  const $ = (s, r = document) => r.querySelector(s);
+  const enc = new TextEncoder();
+  const bytes = (s) => enc.encode((s || '').trim()).length;
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const SUFFIX = { 1: 'ci', 2: 'ci', 3: 'cü', 4: 'cü', 5: 'ci', 6: 'cı', 7: 'ci', 8: 'ci', 9: 'cu', 10: 'cu', 11: 'ci' };
+  const classLabel = (n) => `${n}-${SUFFIX[n]} sinif`;
+  const GRADE_WORD = { 5: 'əla', 4: 'yaxşı', 3: 'kafi', 2: 'qeyri-kafi', 1: '' };
+  const CLASSES = Array.from({ length: 11 }, (_, i) => i + 1);
+  const fmtDate = (iso) => iso.split('-').reverse().join('.');
+  const todayIso = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+  const az = (a, b) => a.localeCompare(b, 'az');
+  const lower = (s) => s.toLocaleLowerCase('az');
+  const avgFmt = new Intl.NumberFormat('az-AZ', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+  const lessonOf = (code) => state.lessons.find((l) => l.code === code);
+  const studentOf = (n) => state.students.find((s) => s.number === n);
+  const fullName = (s) => `${s.firstName} ${s.lastName}`;
+  const grade = (n, size = '') => `<span class="grade ${size}" data-score="${n}" aria-label="Qiymət ${n}">${n}</span>`;
+  const classBadge = (n) => `<span class="inline-block whitespace-nowrap rounded-full bg-ink-soft text-ink px-2.5 py-0.5 text-xs font-medium">${classLabel(n)}</span>`;
+  const codeBadge = (c) => `<span class="inline-block rounded bg-ink-soft text-ink px-1.5 py-0.5 font-mono text-[13px] font-semibold tracking-wider">${esc(c)}</span>`;
+
+  const ICON = {
+    home: '<path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/>',
+    book: '<path d="M4 4h10a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><path d="M8 20a4 4 0 0 1 0-8h10"/>',
+    users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/>',
+    check: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+    trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+    arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+    list: '<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+  };
+  const icon = (name, cls = 'w-4 h-4') => `<svg class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[name]}</svg>`;
+
+  const btnPrimary = 'inline-flex items-center gap-2 rounded-md bg-ink text-on-ink px-4 py-2 text-sm font-semibold hover:opacity-90 disabled:opacity-50';
+  const btnGhost = 'inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted hover:bg-ink-soft hover:text-ink';
+
+  function toast(msg) {
+    const t = $('#toast');
+    t.textContent = msg;
+    t.hidden = false;
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => (t.hidden = true), 3500);
+  }
+
+  // ---------- Naviqasiya ----------
+  const NAV = [
+    { id: 'home', label: 'Ana səhifə', icon: 'home' },
+    { id: 'lessons', label: 'Dərslər', icon: 'book' },
+    { id: 'students', label: 'Şagirdlər', icon: 'users' },
+    { id: 'exams', label: 'İmtahanlar', icon: 'check' },
+  ];
+
+  function renderNav() {
+    const item = (n, mobile) =>
+      `<button type="button" class="nav-btn flex items-center gap-3 rounded-md ${mobile ? 'px-3 py-1.5 whitespace-nowrap' : 'px-3 py-2'} text-sm text-fg hover:bg-ink-soft"
+        data-go="${n.id}" ${state.route === n.id ? 'aria-current="page"' : ''}>${icon(n.icon)}${n.label}</button>`;
+    $('#nav-desktop').innerHTML = NAV.map((n) => item(n, false)).join('');
+    $('#nav-mobile').innerHTML = NAV.map((n) => item(n, true)).join('');
+  }
+
+  function go(route, filters = {}) {
+    state.route = route;
+    Object.assign(state.f, filters);
+    renderNav();
+    VIEWS[route]();
+    window.scrollTo({ top: 0 });
+  }
+
+  const pageHeader = (eyebrow, title, sub, action = '') => `
+    <header class="ruled mb-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+      <div>
+        <p class="eyebrow" style="line-height:32px">${eyebrow}</p>
+        <h1 class="font-display font-bold text-[28px]" style="line-height:32px">${title}</h1>
+        <p class="text-muted text-sm" style="line-height:32px">${sub}</p>
+      </div>
+      <div style="line-height:normal" class="pb-1">${action}</div>
+    </header>`;
+
+  const tableShell = (id, heads) => `
+    <div class="rounded-lg border border-line bg-surface overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[640px] text-sm">
+          <thead><tr class="border-b border-line text-left">${heads.map((h) => `<th scope="col" class="eyebrow px-4 py-3 ${h.cls || ''}">${h.t}</th>`).join('')}</tr></thead>
+          <tbody id="${id}"></tbody>
+        </table>
+      </div>
+    </div>`;
+
+  const emptyRow = (cols, text) => `<tr><td colspan="${cols}" class="px-4 py-12 text-center text-muted">${text}</td></tr>`;
+
+  const rowActions = (kind, key, label) => `
+    <td class="px-2 py-2 text-right whitespace-nowrap row-actions">
+      ${kind !== 'exam' ? `<button type="button" class="rounded-md p-2" data-action="exams-of" data-kind="${kind}" data-key="${esc(key)}" title="İmtahan nəticələri" aria-label="${esc(label)}: imtahan nəticələri">${icon('list')}</button>` : ''}
+      <button type="button" class="rounded-md p-2" data-action="edit" data-kind="${kind}" data-key="${esc(key)}" title="Redaktə et" aria-label="${esc(label)}: redaktə et">${icon('edit')}</button>
+      <button type="button" class="danger rounded-md p-2" data-action="delete" data-kind="${kind}" data-key="${esc(key)}" title="Sil" aria-label="${esc(label)}: sil">${icon('trash')}</button>
+    </td>`;
+
+  const classSelect = (id, value, allLabel) => `
+    <select id="${id}" class="control">
+      ${allLabel ? `<option value="">${allLabel}</option>` : '<option value="" disabled selected>Seçin</option>'}
+      ${CLASSES.map((c) => `<option value="${c}" ${String(value) === String(c) ? 'selected' : ''}>${classLabel(c)}</option>`).join('')}
+    </select>`;
+
+  // ---------- Ana səhifə ----------
+  function renderHome() {
+    const ex = state.exams;
+    const avg = ex.length ? avgFmt.format(ex.reduce((s, e) => s + e.score, 0) / ex.length) : '—';
+    const dist = [5, 4, 3, 2, 1].map((s) => ({ s, n: ex.filter((e) => e.score === s).length }));
+    const max = Math.max(1, ...dist.map((d) => d.n));
+    const recent = [...ex].sort((a, b) => b.examDate.localeCompare(a.examDate) || b.id - a.id).slice(0, 5);
+    const steps = [
+      { n: 1, route: 'lessons', title: 'Dərslər', text: 'İmtahan keçiriləcək dərsi, sinfi və dərsi verən müəllimi qeyd edin.', count: state.lessons.length, unit: 'dərs' },
+      { n: 2, route: 'students', title: 'Şagirdlər', text: 'Şagirdi nömrəsi, adı, soyadı və sinfi ilə qeydiyyata alın.', count: state.students.length, unit: 'şagird' },
+      { n: 3, route: 'exams', title: 'İmtahanlar', text: 'Şagirdin öz sinfinin dərsi üzrə imtahan tarixini və qiymətini yazın.', count: ex.length, unit: 'nəticə' },
+    ];
+
+    $('#view').innerHTML = `
+      ${pageHeader('Orta məktəb', 'İmtahan nəticələrinin qeydiyyatı', 'Qeydiyyat bu ardıcıllıqla aparılır: əvvəl dərslər, sonra şagirdlər, sonda imtahanlar.')}
+
+      <ol class="grid gap-4 sm:grid-cols-3" aria-label="Qeydiyyat mərhələləri">
+        ${steps.map((s) => `
+          <li>
+            <button type="button" data-go="${s.route}" class="group flex h-full w-full flex-col gap-3 rounded-lg border border-line bg-surface p-5 text-left hover:border-ink">
+              <span class="flex items-center justify-between">
+                <span class="eyebrow">Addım ${s.n}</span>
+                <span class="text-ink opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100">${icon('arrow')}</span>
+              </span>
+              <span class="font-display text-xl font-bold">${s.title}</span>
+              <span class="flex-1 text-sm text-muted">${s.text}</span>
+              <span class="tnum"><span class="font-display text-3xl font-bold">${s.count}</span> <span class="text-sm text-muted">${s.unit}</span></span>
+            </button>
+          </li>`).join('')}
+      </ol>
+
+      <div class="mt-6 grid gap-4 lg:grid-cols-5">
+        <section class="lg:col-span-2 rounded-lg border border-line bg-surface p-5" aria-labelledby="dist-title">
+          <div class="flex items-baseline justify-between gap-4">
+            <h2 id="dist-title" class="font-display text-lg font-bold">Qiymət bölgüsü</h2>
+            <p class="text-sm text-muted">orta qiymət <strong class="tnum text-fg text-base">${avg}</strong></p>
+          </div>
+          <ul class="mt-4 flex flex-col gap-3">
+            ${dist.map((d) => `
+              <li class="grid grid-cols-[2.25rem_5.5rem_1fr_1.5rem] items-center gap-3">
+                ${grade(d.s)}
+                <span class="text-sm text-muted">${GRADE_WORD[d.s] || '&nbsp;'}</span>
+                <span class="h-2 rounded-full bg-paper overflow-hidden"><span class="block h-full rounded-full" data-score="${d.s}" style="width:${(d.n / max) * 100}%;background:var(--g-fg)"></span></span>
+                <span class="tnum text-right text-sm">${d.n}</span>
+              </li>`).join('')}
+          </ul>
+        </section>
+
+        <section class="lg:col-span-3 rounded-lg border border-line bg-surface p-5" aria-labelledby="recent-title">
+          <div class="flex items-baseline justify-between gap-4">
+            <h2 id="recent-title" class="font-display text-lg font-bold">Son nəticələr</h2>
+            <button type="button" data-go="exams" class="text-sm font-medium text-ink hover:underline">Hamısı</button>
+          </div>
+          <ul class="mt-3 divide-y divide-line">
+            ${recent.length ? recent.map((e) => {
+              const l = lessonOf(e.lessonCode), s = studentOf(e.studentNumber);
+              return `<li class="flex items-center gap-4 py-3">
+                ${grade(e.score)}
+                <span class="min-w-0 flex-1">
+                  <span class="block truncate font-medium">${esc(fullName(s))}</span>
+                  <span class="block truncate text-sm text-muted">${esc(l.name)} · ${classLabel(l.classNumber)}</span>
+                </span>
+                <span class="tnum text-sm text-muted">${fmtDate(e.examDate)}</span>
+              </li>`;
+            }).join('') : '<li class="py-8 text-center text-muted">Hələ nəticə yoxdur.</li>'}
+          </ul>
+        </section>
+      </div>`;
+  }
+
+  // ---------- Dərslər ----------
+  function renderLessons() {
+    $('#view').innerHTML = `
+      ${pageHeader('Addım 1', 'Dərslər', 'İmtahan keçiriləcək dərslərin reyestri', `<button type="button" class="${btnPrimary}" data-action="new" data-kind="lesson">${icon('plus')}Yeni dərs</button>`)}
+      <div class="mb-4 flex flex-wrap gap-3">
+        <label class="relative flex-[2_1_260px] max-w-md">
+          <span class="sr-only">Axtar</span>
+          <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">${icon('search')}</span>
+          <input id="lq" class="control pl-9" placeholder="Kod, dərs və ya müəllim" value="${esc(state.f.lq)}">
+        </label>
+        <label class="flex-[1_1_180px] max-w-xs"><span class="sr-only">Sinif</span>${classSelect('lc', state.f.lc, 'Bütün siniflər')}</label>
+      </div>
+      ${tableShell('lesson-rows', [{ t: 'Kod' }, { t: 'Dərsin adı' }, { t: 'Sinif' }, { t: 'Müəllim' }, { t: '<span class="sr-only">Əməliyyatlar</span>' }])}`;
+    $('#lq').addEventListener('input', (e) => { state.f.lq = e.target.value; lessonRows(); });
+    $('#lc').addEventListener('change', (e) => { state.f.lc = e.target.value; lessonRows(); });
+    lessonRows();
+  }
+
+  function lessonRows() {
+    const q = lower(state.f.lq.trim());
+    const rows = state.lessons
+      .filter((l) => !state.f.lc || l.classNumber === Number(state.f.lc))
+      .filter((l) => !q || lower(`${l.code} ${l.name} ${l.teacherFirstName} ${l.teacherLastName}`).includes(q))
+      .sort((a, b) => a.classNumber - b.classNumber || az(a.name, b.name));
+    $('#lesson-rows').innerHTML = rows.length
+      ? rows.map((l) => `
+        <tr class="border-b border-line last:border-0 hover:bg-paper">
+          <td class="px-4 py-3">${codeBadge(l.code)}</td>
+          <td class="px-4 py-3 font-medium">${esc(l.name)}</td>
+          <td class="px-4 py-3">${classBadge(l.classNumber)}</td>
+          <td class="px-4 py-3">${esc(l.teacherFirstName)} ${esc(l.teacherLastName)}</td>
+          ${rowActions('lesson', l.code, l.name)}
+        </tr>`).join('')
+      : emptyRow(5, q || state.f.lc ? 'Filtrə uyğun dərs tapılmadı.' : 'Hələ dərs qeydiyyata alınmayıb. “Yeni dərs” ilə başlayın.');
+  }
+
+  // ---------- Şagirdlər ----------
+  function renderStudents() {
+    $('#view').innerHTML = `
+      ${pageHeader('Addım 2', 'Şagirdlər', 'Qeydiyyatda olan şagirdlərin siyahısı', `<button type="button" class="${btnPrimary}" data-action="new" data-kind="student">${icon('plus')}Yeni şagird</button>`)}
+      <div class="mb-4 flex flex-wrap gap-3">
+        <label class="relative flex-[2_1_260px] max-w-md">
+          <span class="sr-only">Axtar</span>
+          <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">${icon('search')}</span>
+          <input id="sq" class="control pl-9" placeholder="Nömrə, ad və ya soyad" value="${esc(state.f.sq)}">
+        </label>
+        <label class="flex-[1_1_180px] max-w-xs"><span class="sr-only">Sinif</span>${classSelect('sc', state.f.sc, 'Bütün siniflər')}</label>
+      </div>
+      ${tableShell('student-rows', [{ t: 'Nömrə' }, { t: 'Soyadı' }, { t: 'Adı' }, { t: 'Sinif' }, { t: 'İmtahan' }, { t: '<span class="sr-only">Əməliyyatlar</span>' }])}`;
+    $('#sq').addEventListener('input', (e) => { state.f.sq = e.target.value; studentRows(); });
+    $('#sc').addEventListener('change', (e) => { state.f.sc = e.target.value; studentRows(); });
+    studentRows();
+  }
+
+  function studentRows() {
+    const q = lower(state.f.sq.trim());
+    const rows = state.students
+      .filter((s) => !state.f.sc || s.classNumber === Number(state.f.sc))
+      .filter((s) => !q || lower(`${s.number} ${s.firstName} ${s.lastName}`).includes(q))
+      .sort((a, b) => a.number - b.number);
+    $('#student-rows').innerHTML = rows.length
+      ? rows.map((s) => {
+          const scores = state.exams.filter((e) => e.studentNumber === s.number).sort((a, b) => a.examDate.localeCompare(b.examDate));
+          return `
+          <tr class="border-b border-line last:border-0 hover:bg-paper">
+            <td class="px-4 py-3 font-mono tnum">${s.number}</td>
+            <td class="px-4 py-3 font-medium">${esc(s.lastName)}</td>
+            <td class="px-4 py-3">${esc(s.firstName)}</td>
+            <td class="px-4 py-3">${classBadge(s.classNumber)}</td>
+            <td class="px-4 py-2"><span class="flex gap-1">${scores.length ? scores.map((e) => `<span title="${esc(lessonOf(e.lessonCode).name)}, ${fmtDate(e.examDate)}">${grade(e.score)}</span>`).join('') : '<span class="text-muted">—</span>'}</span></td>
+            ${rowActions('student', s.number, fullName(s))}
+          </tr>`;
+        }).join('')
+      : emptyRow(6, q || state.f.sc ? 'Filtrə uyğun şagird tapılmadı.' : 'Hələ şagird qeydiyyata alınmayıb.');
+  }
+
+  // ---------- İmtahanlar ----------
+  function renderExams() {
+    const lessonOpts = [...state.lessons].sort((a, b) => a.classNumber - b.classNumber || az(a.name, b.name));
+    $('#view').innerHTML = `
+      ${pageHeader('Addım 3', 'İmtahanlar', 'Şagirdlərin dərslər üzrə imtahan nəticələri', `<button type="button" class="${btnPrimary}" data-action="new" data-kind="exam">${icon('plus')}Yeni nəticə</button>`)}
+      <div class="mb-4 flex flex-wrap items-end gap-3">
+        <div class="field flex-[1_1_220px] max-w-xs"><label for="el">Dərs</label>
+          <select id="el" class="control"><option value="">Bütün dərslər</option>
+            ${lessonOpts.map((l) => `<option value="${l.code}" ${state.f.el === l.code ? 'selected' : ''}>${l.code} — ${esc(l.name)} (${classLabel(l.classNumber)})</option>`).join('')}
+          </select></div>
+        <div class="field flex-[1_1_220px] max-w-xs"><label for="es">Şagird</label><select id="es" class="control"></select></div>
+        <div class="field flex-[1_1_150px] max-w-[11rem]"><label for="ef">Tarixdən</label><input id="ef" type="date" class="control" max="${todayIso()}" value="${state.f.ef}"></div>
+        <div class="field flex-[1_1_150px] max-w-[11rem]"><label for="et">Tarixədək</label><input id="et" type="date" class="control" max="${todayIso()}" value="${state.f.et}"></div>
+        <button type="button" id="reset" class="${btnGhost}">Sıfırla</button>
+      </div>
+      <p id="range-err" class="err mb-3" role="alert"></p>
+      <section id="exam-stats" class="mb-4 grid gap-3 grid-cols-2 lg:grid-cols-[1fr_1fr_2fr]" aria-label="Statistika"></section>
+      ${tableShell('exam-rows', [{ t: 'Tarix' }, { t: 'Dərs' }, { t: 'Şagird' }, { t: 'Sinif' }, { t: 'Qiymət' }, { t: '<span class="sr-only">Əməliyyatlar</span>' }])}`;
+
+    const studentSelect = () => {
+      const l = lessonOf(state.f.el);
+      const list = state.students.filter((s) => !l || s.classNumber === l.classNumber).sort((a, b) => az(a.lastName, b.lastName));
+      if (state.f.es && !list.some((s) => String(s.number) === state.f.es)) state.f.es = '';
+      $('#es').innerHTML = `<option value="">${l ? `Bütün ${classLabel(l.classNumber)} şagirdləri` : 'Bütün şagirdlər'}</option>` +
+        list.map((s) => `<option value="${s.number}" ${state.f.es === String(s.number) ? 'selected' : ''}>${s.number} — ${esc(s.lastName)} ${esc(s.firstName)}</option>`).join('');
+    };
+    studentSelect();
+    $('#el').addEventListener('change', (e) => { state.f.el = e.target.value; studentSelect(); examRows(); });
+    $('#es').addEventListener('change', (e) => { state.f.es = e.target.value; examRows(); });
+    $('#ef').addEventListener('change', (e) => { state.f.ef = e.target.value; examRows(); });
+    $('#et').addEventListener('change', (e) => { state.f.et = e.target.value; examRows(); });
+    $('#reset').addEventListener('click', () => { Object.assign(state.f, { el: '', es: '', ef: '', et: '' }); renderExams(); });
+    examRows();
+  }
+
+  function examRows() {
+    const { el, es, ef, et } = state.f;
+    const bad = ef && et && ef > et;
+    $('#range-err').textContent = bad ? '“Tarixdən” “Tarixədək”-dən sonra ola bilməz. Tarixləri yerində dəyişin.' : '';
+    const rows = bad ? [] : state.exams
+      .filter((e) => (!el || e.lessonCode === el) && (!es || e.studentNumber === Number(es)) && (!ef || e.examDate >= ef) && (!et || e.examDate <= et))
+      .sort((a, b) => b.examDate.localeCompare(a.examDate) || b.id - a.id);
+
+    const stats = $('#exam-stats');
+    if (rows.length) {
+      const avg = avgFmt.format(rows.reduce((s, e) => s + e.score, 0) / rows.length);
+      stats.hidden = false;
+      stats.innerHTML = `
+        <div class="rounded-lg border border-line bg-surface px-4 py-3"><p class="eyebrow">Nəticə</p><p class="tnum font-display text-2xl font-bold">${rows.length}</p></div>
+        <div class="rounded-lg border border-line bg-surface px-4 py-3"><p class="eyebrow">Orta qiymət</p><p class="tnum font-display text-2xl font-bold">${avg}</p></div>
+        <div class="col-span-2 lg:col-span-1 rounded-lg border border-line bg-surface px-4 py-3"><p class="eyebrow">Bölgü</p>
+          <p class="mt-1 flex flex-wrap gap-x-4 gap-y-2">${[5, 4, 3, 2, 1].map((s) => `<span class="inline-flex items-center gap-1.5">${grade(s)}<span class="tnum text-muted">× ${rows.filter((e) => e.score === s).length}</span></span>`).join('')}</p></div>`;
+    } else {
+      stats.hidden = true;
+    }
+
+    const filtered = el || es || ef || et;
+    $('#exam-rows').innerHTML = rows.length
+      ? rows.map((e) => {
+          const l = lessonOf(e.lessonCode), s = studentOf(e.studentNumber);
+          return `
+          <tr class="border-b border-line last:border-0 hover:bg-paper">
+            <td class="px-4 py-3 tnum whitespace-nowrap">${fmtDate(e.examDate)}</td>
+            <td class="px-4 py-3"><span class="flex items-center gap-2">${codeBadge(l.code)}${esc(l.name)}</span></td>
+            <td class="px-4 py-3"><span class="font-mono tnum text-muted mr-2">${s.number}</span>${esc(fullName(s))}</td>
+            <td class="px-4 py-3">${classBadge(l.classNumber)}</td>
+            <td class="px-4 py-2"><span class="inline-flex items-center gap-2">${grade(e.score)}<span class="text-xs text-muted">${GRADE_WORD[e.score]}</span></span></td>
+            ${rowActions('exam', e.id, `${fullName(s)}, ${l.name}`)}
+          </tr>`;
+        }).join('')
+      : emptyRow(6, filtered ? 'Filtrlərə uyğun nəticə tapılmadı.' : 'Hələ imtahan nəticəsi yazılmayıb.');
+  }
+
+  const VIEWS = { home: renderHome, lessons: renderLessons, students: renderStudents, exams: renderExams };
+
+  // ---------- Formalar ----------
+  const dlg = $('#form-dialog');
+
+  const textField = (id, label, value, maxBytes, opts = '', cls = '') => `
+    <div class="field">
+      <label for="${id}">${label}</label>
+      <input id="${id}" class="control ${cls}" value="${esc(value ?? '')}" autocomplete="off" ${opts}>
+      ${maxBytes ? `<p class="hint"><span></span><span class="tnum" data-bytes="${id}" data-max="${maxBytes}">${bytes(value)} / ${maxBytes} bayt</span></p>` : ''}
+      <p class="err" data-err="${id}"></p>
+    </div>`;
+
+  function openForm(kind, key) {
+    const editing = key !== undefined;
+    let title, body;
+    if (kind === 'lesson') {
+      const l = editing ? lessonOf(key) : {};
+      title = editing ? 'Dərsi redaktə et' : 'Yeni dərs';
+      body = `
+        <div class="grid gap-4 sm:grid-cols-2">
+          ${textField('code', 'Dərsin kodu', l.code, 0, `maxlength="3" ${editing ? 'disabled' : ''} placeholder="RIY"`, 'font-mono uppercase tracking-widest')}
+          <div class="field"><label for="classNumber">Sinif</label>${classSelect('classNumber', l.classNumber)}<p class="err" data-err="classNumber"></p></div>
+          <div class="sm:col-span-2">${textField('name', 'Dərsin adı', l.name, 30)}</div>
+          ${textField('teacherFirstName', 'Müəllimin adı', l.teacherFirstName, 20)}
+          ${textField('teacherLastName', 'Müəllimin soyadı', l.teacherLastName, 20)}
+        </div>
+        <p class="mt-3 text-xs text-muted">Limitlər baytla ölçülür: ə, ş, ç, ğ, ı, ö, ü hərfləri 2 bayt tutur.</p>`;
+    } else if (kind === 'student') {
+      const s = editing ? studentOf(Number(key)) : {};
+      title = editing ? 'Şagirdi redaktə et' : 'Yeni şagird';
+      body = `
+        <div class="grid gap-4 sm:grid-cols-2">
+          ${textField('number', 'Nömrəsi', s.number, 0, `inputmode="numeric" placeholder="1 – 99999" ${editing ? 'disabled' : ''}`, 'font-mono')}
+          <div class="field"><label for="classNumber">Sinif</label>${classSelect('classNumber', s.classNumber)}<p class="err" data-err="classNumber"></p></div>
+          ${textField('firstName', 'Adı', s.firstName, 30)}
+          ${textField('lastName', 'Soyadı', s.lastName, 30)}
+        </div>`;
+    } else {
+      const e = editing ? state.exams.find((x) => x.id === Number(key)) : { lessonCode: state.f.el, studentNumber: Number(state.f.es) || undefined, examDate: todayIso() };
+      title = editing ? 'Nəticəni redaktə et' : 'Yeni imtahan nəticəsi';
+      const lessonOpts = [...state.lessons].sort((a, b) => a.classNumber - b.classNumber || az(a.name, b.name));
+      const lockedInfo = editing ? (() => { const l = lessonOf(e.lessonCode), s = studentOf(e.studentNumber); return `
+        <dl class="grid gap-3 rounded-md bg-paper p-4 sm:grid-cols-3">
+          <div><dt class="eyebrow">Dərs</dt><dd class="mt-1">${codeBadge(l.code)} ${esc(l.name)}</dd></div>
+          <div><dt class="eyebrow">Şagird</dt><dd class="mt-1">${esc(fullName(s))}</dd></div>
+          <div><dt class="eyebrow">Sinif</dt><dd class="mt-1">${classLabel(l.classNumber)}</dd></div>
+        </dl>`; })() : '';
+      body = `
+        ${lockedInfo}
+        <div class="grid gap-4 sm:grid-cols-2 ${editing ? 'mt-4' : ''}">
+          ${editing ? '' : `
+          <div class="field sm:col-span-2"><label for="lessonCode">Dərs</label>
+            <select id="lessonCode" class="control"><option value="" disabled ${e.lessonCode ? '' : 'selected'}>Seçin</option>
+              ${lessonOpts.map((l) => `<option value="${l.code}" ${e.lessonCode === l.code ? 'selected' : ''}>${l.code} — ${esc(l.name)} (${classLabel(l.classNumber)})</option>`).join('')}
+            </select><p class="err" data-err="lessonCode"></p></div>
+          <div class="field sm:col-span-2"><label for="studentNumber">Şagird</label>
+            <select id="studentNumber" class="control"></select>
+            <p class="hint" id="student-hint"></p><p class="err" data-err="studentNumber"></p></div>`}
+          <div class="field"><label for="examDate">İmtahan tarixi</label>
+            <input id="examDate" type="date" class="control" max="${todayIso()}" value="${e.examDate}">
+            <p class="hint">Gələcək tarix seçilə bilməz.</p><p class="err" data-err="examDate"></p></div>
+          <fieldset class="field"><legend class="text-[13px] font-medium text-muted mb-1">Qiyməti</legend>
+            <div class="score-pick flex gap-2">
+              ${[1, 2, 3, 4, 5].map((n) => `<span data-score="${n}"><input type="radio" name="score" id="score-${n}" value="${n}" ${e.score === n ? 'checked' : ''}><label for="score-${n}" class="grid place-items-center w-11 h-11 rounded-md font-hand text-[28px] font-bold leading-none">${n}</label></span>`).join('')}
+            </div>
+            <p class="err" data-err="score"></p></fieldset>
+        </div>`;
+      setTimeout(() => {
+        if (editing) return;
+        const ls = $('#lessonCode', dlg), ss = $('#studentNumber', dlg);
+        const fill = () => {
+          const l = lessonOf(ls.value);
+          const list = l ? state.students.filter((s) => s.classNumber === l.classNumber).sort((a, b) => az(a.lastName, b.lastName)) : [];
+          const keep = list.some((s) => s.number === Number(ss.value || e.studentNumber)) ? Number(ss.value || e.studentNumber) : null;
+          ss.disabled = !l;
+          ss.innerHTML = `<option value="" disabled ${keep ? '' : 'selected'}>${l ? 'Seçin' : 'Əvvəlcə dərsi seçin'}</option>` +
+            list.map((s) => `<option value="${s.number}" ${keep === s.number ? 'selected' : ''}>${s.number} — ${esc(s.lastName)} ${esc(s.firstName)}</option>`).join('');
+          $('#student-hint', dlg).textContent = !l ? 'Şagird yalnız öz sinfinin dərsindən imtahan verə bilər.'
+            : list.length ? `Yalnız ${classLabel(l.classNumber)} şagirdləri göstərilir.` : `${classLabel(l.classNumber)} üzrə qeydiyyatda şagird yoxdur.`;
+        };
+        ls.addEventListener('change', () => { e.studentNumber = undefined; fill(); });
+        fill();
+      });
+    }
+
+    dlg.innerHTML = `
+      <form id="entity-form" novalidate data-kind="${kind}" ${editing ? `data-key="${esc(key)}"` : ''}>
+        <div class="flex items-center justify-between border-b border-line px-6 py-4">
+          <h2 id="form-title" class="font-display text-xl font-bold">${title}</h2>
+          <button type="button" class="${btnGhost} px-2" data-close aria-label="Bağla">✕</button>
+        </div>
+        <div class="px-6 py-5">
+          <p class="err mb-4 rounded-md bg-pen-soft px-3 py-2" id="form-err" role="alert"></p>
+          ${body}
+        </div>
+        <div class="flex justify-end gap-2 border-t border-line px-6 py-4">
+          <button type="button" class="${btnGhost}" data-close>Ləğv et</button>
+          <button type="submit" class="${btnPrimary}">Yadda saxla</button>
+        </div>
+      </form>`;
+
+    dlg.querySelectorAll('[data-bytes]').forEach((counter) => {
+      const input = $('#' + counter.dataset.bytes, dlg);
+      const max = Number(counter.dataset.max);
+      input.addEventListener('input', () => {
+        const n = bytes(input.value);
+        counter.textContent = `${n} / ${max} bayt`;
+        counter.style.color = n > max ? 'var(--pen)' : '';
+      });
+    });
+    dlg.showModal();
+  }
+
+  function setErrors(form, errors) {
+    form.querySelectorAll('[data-err]').forEach((p) => {
+      const msg = errors[p.dataset.err] || '';
+      p.textContent = msg;
+      const control = $('#' + p.dataset.err, form);
+      if (control) control.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    });
+    $('#form-err', form).textContent = errors._form || '';
+    return Object.keys(errors).length === 0;
+  }
+
+  const textRule = (v, max) => !v.trim() ? 'Bu sahə mütləqdir.' : bytes(v) > max ? `Maksimum ${max} bayt (hazırda ${bytes(v)}).` : '';
+
+  function submitForm(form) {
+    const kind = form.dataset.kind, key = form.dataset.key, editing = key !== undefined;
+    const val = (id) => ($('#' + id, form)?.value ?? '');
+    const errors = {};
+    const put = (k, m) => { if (m) errors[k] = m; };
+
+    if (kind === 'lesson') {
+      const code = val('code').trim().toUpperCase();
+      const data = { name: val('name').trim(), classNumber: Number(val('classNumber')), teacherFirstName: val('teacherFirstName').trim(), teacherLastName: val('teacherLastName').trim() };
+      if (!editing) put('code', !/^[A-Z0-9]{3}$/.test(code) ? 'Kod 3 simvoldan (latın hərfi və ya rəqəm) ibarət olmalıdır.' : lessonOf(code) ? `“${code}” kodlu dərs artıq mövcuddur.` : '');
+      put('name', textRule(val('name'), 30));
+      put('classNumber', data.classNumber ? '' : 'Sinfi seçin.');
+      put('teacherFirstName', textRule(val('teacherFirstName'), 20));
+      put('teacherLastName', textRule(val('teacherLastName'), 20));
+      const current = editing && lessonOf(key);
+      if (current && data.classNumber && data.classNumber !== current.classNumber && state.exams.some((e) => e.lessonCode === key))
+        errors._form = 'Bu dərsin imtahan nəticələri var, ona görə sinfi dəyişdirilə bilməz.';
+      if (!setErrors(form, errors)) return;
+      if (editing) Object.assign(current, data); else state.lessons.push({ code, ...data });
+      toast(editing ? `“${data.name}” dərsi yeniləndi.` : `“${data.name}” dərsi əlavə olundu.`);
+    } else if (kind === 'student') {
+      const number = Number(val('number'));
+      const data = { firstName: val('firstName').trim(), lastName: val('lastName').trim(), classNumber: Number(val('classNumber')) };
+      if (!editing) put('number', !Number.isInteger(number) || number < 1 || number > 99999 ? 'Nömrə 1 ilə 99999 arasında tam ədəd olmalıdır.' : studentOf(number) ? `${number} nömrəli şagird artıq mövcuddur.` : '');
+      put('firstName', textRule(val('firstName'), 30));
+      put('lastName', textRule(val('lastName'), 30));
+      put('classNumber', data.classNumber ? '' : 'Sinfi seçin.');
+      const current = editing && studentOf(Number(key));
+      if (current && data.classNumber && data.classNumber !== current.classNumber && state.exams.some((e) => e.studentNumber === current.number))
+        errors._form = 'Bu şagirdin imtahan nəticələri var, ona görə sinfi dəyişdirilə bilməz.';
+      if (!setErrors(form, errors)) return;
+      if (editing) Object.assign(current, data); else state.students.push({ number, ...data });
+      toast(editing ? `${data.firstName} ${data.lastName} yeniləndi.` : `${data.firstName} ${data.lastName} qeydiyyata alındı.`);
+    } else {
+      const examDate = val('examDate');
+      const score = Number(form.querySelector('input[name="score"]:checked')?.value);
+      const current = editing && state.exams.find((e) => e.id === Number(key));
+      const lessonCode = editing ? current.lessonCode : val('lessonCode');
+      const studentNumber = editing ? current.studentNumber : Number(val('studentNumber'));
+      if (!editing) { put('lessonCode', lessonCode ? '' : 'Dərsi seçin.'); put('studentNumber', studentNumber ? '' : 'Şagirdi seçin.'); }
+      put('examDate', !examDate ? 'Tarixi daxil edin.' : examDate > todayIso() ? 'İmtahan tarixi gələcək ola bilməz.' : '');
+      put('score', score ? '' : 'Qiyməti seçin (1–5).');
+      if (lessonCode && studentNumber && examDate && state.exams.some((e) => e.lessonCode === lessonCode && e.studentNumber === studentNumber && e.examDate === examDate && e.id !== (current?.id)))
+        errors._form = 'Bu şagirdin həmin dərs üzrə bu tarixdə nəticəsi artıq yazılıb.';
+      if (!setErrors(form, errors)) return;
+      if (editing) Object.assign(current, { examDate, score });
+      else state.exams.push({ id: state.nextExamId++, lessonCode, studentNumber, examDate, score });
+      toast(editing ? 'Nəticə yeniləndi.' : `${fullName(studentOf(studentNumber))}: ${lessonOf(lessonCode).name} üzrə ${score} yazıldı.`);
+    }
+    dlg.close();
+    VIEWS[state.route]();
+  }
+
+  // ---------- Silmə ----------
+  const cdlg = $('#confirm-dialog');
+  function confirmDelete(kind, key) {
+    let title, text, blocked = '';
+    if (kind === 'lesson') {
+      const l = lessonOf(key); const n = state.exams.filter((e) => e.lessonCode === key).length;
+      title = 'Dərsi sil'; text = `“${l.code} — ${l.name}” dərsi silinsin?`;
+      if (n) blocked = `Bu dərs üzrə ${n} imtahan nəticəsi var. Əvvəlcə həmin nəticələri silin.`;
+    } else if (kind === 'student') {
+      const s = studentOf(Number(key)); const n = state.exams.filter((e) => e.studentNumber === s.number).length;
+      title = 'Şagirdi sil'; text = `№${s.number} — ${fullName(s)} silinsin?`;
+      if (n) blocked = `Bu şagirdin ${n} imtahan nəticəsi var. Əvvəlcə həmin nəticələri silin.`;
+    } else {
+      const e = state.exams.find((x) => x.id === Number(key));
+      title = 'Nəticəni sil'; text = `${fullName(studentOf(e.studentNumber))} — ${lessonOf(e.lessonCode).name}, ${fmtDate(e.examDate)}, qiymət ${e.score}. Silinsin?`;
+    }
+    cdlg.innerHTML = `
+      <div class="px-6 py-5">
+        <h2 id="confirm-title" class="font-display text-xl font-bold">${title}</h2>
+        <p class="mt-2 text-muted">${esc(text)}</p>
+        ${blocked ? `<p class="mt-3 rounded-md bg-pen-soft px-3 py-2 text-sm text-pen">${blocked}</p>` : '<p class="mt-2 text-sm text-muted">Bu əməliyyat geri qaytarılmır.</p>'}
+      </div>
+      <div class="flex justify-end gap-2 border-t border-line px-6 py-4">
+        <button type="button" class="${btnGhost}" data-close>${blocked ? 'Bağla' : 'Ləğv et'}</button>
+        ${blocked ? '' : `<button type="button" class="inline-flex items-center gap-2 rounded-md bg-pen px-4 py-2 text-sm font-semibold text-surface hover:opacity-90" id="do-delete">${icon('trash')}Sil</button>`}
+      </div>`;
+    cdlg.showModal();
+    $('#do-delete', cdlg)?.addEventListener('click', () => {
+      if (kind === 'lesson') state.lessons = state.lessons.filter((l) => l.code !== key);
+      else if (kind === 'student') state.students = state.students.filter((s) => s.number !== Number(key));
+      else state.exams = state.exams.filter((e) => e.id !== Number(key));
+      cdlg.close();
+      toast('Silindi.');
+      VIEWS[state.route]();
+    });
+  }
+
+  // ---------- Hadisələr ----------
+  document.addEventListener('click', (ev) => {
+    const goBtn = ev.target.closest('[data-go]');
+    if (goBtn) return go(goBtn.dataset.go);
+    if (ev.target.closest('[data-close]')) return ev.target.closest('dialog').close();
+    const a = ev.target.closest('[data-action]');
+    if (!a) return;
+    const { action, kind, key } = a.dataset;
+    if (action === 'new') openForm(kind);
+    else if (action === 'edit') openForm(kind, key);
+    else if (action === 'delete') confirmDelete(kind, key);
+    else if (action === 'exams-of') go('exams', kind === 'lesson' ? { el: key, es: '', ef: '', et: '' } : { el: '', es: key, ef: '', et: '' });
+  });
+  dlg.addEventListener('submit', (ev) => { ev.preventDefault(); submitForm(ev.target); });
+
+  go('home');
+})();
+</script>

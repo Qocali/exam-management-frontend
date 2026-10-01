@@ -1,0 +1,118 @@
+<exam-page-header [eyebrow]="'students.step' | t" [title]="'module.students' | t" [subtitle]="'students.subtitle' | t">
+  @if (canEdit()) {
+    <button type="button" class="btn btn-primary" (click)="create()">
+        <exam-icon name="plus" />
+        {{ 'students.new' | t }}
+    </button>
+  }
+</exam-page-header>
+
+@if (!canEdit()) {
+  <div class="alert alert-info mb-4">
+    <exam-icon name="info" class="mt-0.5 size-5" />
+    <span>{{ 'common.readOnly' | t }}</span>
+  </div>
+}
+
+<div class="mb-4 flex flex-wrap gap-3">
+  <label class="relative max-w-md flex-[2_1_260px]">
+    <span class="sr-only">{{ 'common.search' | t }}</span>
+    <exam-icon name="search" class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted" />
+    <input
+      #q
+      type="search"
+      class="control pl-9"
+      [placeholder]="'students.searchPlaceholder' | t"
+      autocomplete="off"
+      [value]="search()"
+      (input)="search.set(q.value)"
+    />
+  </label>
+  <label class="max-w-xs flex-[1_1_180px]">
+    <span class="sr-only">{{ 'students.field.class' | t }}</span>
+    <select #c class="control" (change)="onClassFilterChange(c.value)">
+      <option value="">{{ 'common.allClasses' | t }}</option>
+      @for (n of classNumbers; track n) {
+        <option [value]="n" [selected]="classFilter() === n">{{ n | classLabel }}</option>
+      }
+    </select>
+  </label>
+</div>
+
+@if (students.error(); as message) {
+  <div class="alert alert-error mb-4" role="alert">
+    <exam-icon name="alert" class="mt-0.5 size-5" />
+    <span class="flex-1">{{ message }}</span>
+    <button type="button" class="font-semibold underline" (click)="students.reload()">{{ 'common.retry' | t }}</button>
+  </div>
+}
+
+<div class="card overflow-hidden" [attr.aria-busy]="students.loading()">
+  <div class="overflow-x-auto">
+    <table class="data-table">
+      <caption class="sr-only">{{ 'students.tableCaption' | t }}</caption>
+      <thead>
+        <tr>
+          <th scope="col" [attr.aria-sort]="sort.ariaSort('number')"><button examSortButton="number" [sort]="sort">{{ 'students.column.number' | t }}</button></th>
+          <th scope="col" [attr.aria-sort]="sort.ariaSort('lastName')"><button examSortButton="lastName" [sort]="sort">{{ 'students.field.lastName' | t }}</button></th>
+          <th scope="col" [attr.aria-sort]="sort.ariaSort('firstName')"><button examSortButton="firstName" [sort]="sort">{{ 'students.field.firstName' | t }}</button></th>
+          <th scope="col" [attr.aria-sort]="sort.ariaSort('classNumber')"><button examSortButton="classNumber" [sort]="sort">{{ 'students.field.class' | t }}</button></th>
+          <th scope="col"><span class="sr-only">{{ 'common.actions' | t }}</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (student of sort.sorted(); track student.number) {
+          <tr>
+            <td class="tnum font-mono">{{ student.number }}</td>
+            <td class="font-medium">{{ student.lastName }}</td>
+            <td>{{ student.firstName }}</td>
+            <td><span class="class-badge">{{ student.classNumber | classLabel }}</span></td>
+            <td class="w-px whitespace-nowrap text-right">
+              <a
+                class="icon-btn"
+                routerLink="/exams"
+                [queryParams]="{ studentNumber: student.number }"
+                [title]="'students.examResults' | t"
+                [attr.aria-label]="'students.aria.examResults' | t: { name: student.firstName + ' ' + student.lastName }"
+              >
+                <exam-icon name="list" />
+              </a>
+              @if (canEdit()) {
+                <button
+                  type="button"
+                  class="icon-btn"
+                  [title]="'common.edit' | t"
+                  [attr.aria-label]="'students.aria.edit' | t: { name: student.firstName + ' ' + student.lastName }"
+                  (click)="edit(student)"
+                >
+                  <exam-icon name="edit" />
+                </button>
+                <button
+                  type="button"
+                  class="icon-btn danger"
+                  [title]="'common.delete' | t"
+                  [attr.aria-label]="'students.aria.delete' | t: { name: student.firstName + ' ' + student.lastName }"
+                  (click)="remove(student)"
+                >
+                  <exam-icon name="trash" />
+                </button>
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="py-12 text-center text-muted">
+              @if (students.loading()) {
+                {{ 'common.loading' | t }}
+              } @else if (search() || classFilter()) {
+                {{ 'students.empty.filtered' | t }}
+              } @else {
+                {{ 'students.empty.none' | t }}
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
