@@ -1,0 +1,63 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="flex items-center justify-between border-b border-line px-6 py-4">
+    <h2 id="student-form-title" class="font-display text-xl font-bold">{{ (isEdit ? 'students.form.editTitle' : 'students.new') | t }}</h2>
+    <button type="button" class="icon-btn" [attr.aria-label]="'common.close' | t" [disabled]="saving()" (click)="dialogRef.close()">
+      <exam-icon name="close" />
+    </button>
+  </div>
+
+  <div class="flex flex-col gap-4 px-6 py-5">
+    @if (serverError(); as message) {
+      <div class="alert alert-error" role="alert">
+        <exam-icon name="alert" class="mt-0.5" />
+        <span>{{ message }}</span>
+      </div>
+    }
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <exam-field [label]="'students.field.number' | t" [hint]="numberHint" [control]="form.controls.number">
+        <input
+          examControl
+          type="number"
+          inputmode="numeric"
+          formControlName="number"
+          class="tnum font-mono"
+          autocomplete="off"
+          [min]="rules.minStudentNumber"
+          [max]="rules.maxStudentNumber"
+        />
+      </exam-field>
+
+      <exam-field [label]="'students.field.class' | t" [control]="form.controls.classNumber">
+        <select examControl formControlName="classNumber">
+          <option [ngValue]="null" disabled>{{ 'common.select' | t }}</option>
+          @for (n of classNumbers; track n) {
+            <option [ngValue]="n">{{ n | classLabel }}</option>
+          }
+        </select>
+      </exam-field>
+
+      <exam-field [label]="'students.field.firstName' | t" [control]="form.controls.firstName" [maxBytes]="rules.studentNameMaxBytes">
+        <input examControl formControlName="firstName" autocomplete="off" />
+      </exam-field>
+
+      <exam-field [label]="'students.field.lastName' | t" [control]="form.controls.lastName" [maxBytes]="rules.studentNameMaxBytes">
+        <input examControl formControlName="lastName" autocomplete="off" />
+      </exam-field>
+    </div>
+
+    @if (isEdit) {
+      <div class="alert alert-info">
+        <exam-icon name="info" class="mt-0.5" />
+        <span>{{ 'students.form.classLocked' | t }}</span>
+      </div>
+    }
+  </div>
+
+  <div class="flex justify-end gap-2 border-t border-line px-6 py-4">
+    <button type="button" class="btn btn-ghost" [disabled]="saving()" (click)="dialogRef.close()">{{ 'common.cancel' | t }}</button>
+    <button type="submit" class="btn btn-primary" [disabled]="saving()">
+      {{ (saving() ? 'common.saving' : 'common.save') | t }}
+    </button>
+  </div>
+</form>

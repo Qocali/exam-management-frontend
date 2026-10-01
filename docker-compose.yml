@@ -1,0 +1,70 @@
+name: exam-frontend
+
+# Lokal production-a bənzər yoxlama üçün. Backend (D:\exam-management-service) ayrıca işləməlidir
+# və konteynerdən əlçatan olmalıdır (məs. --urls http://0.0.0.0:5099).
+#   npm install                 # ilk dəfə: package-lock.json yaradır (Dockerfile npm ci istifadə edir)
+#   docker compose up -d --build
+#   http://localhost:8080
+#
+# Korporativ registry mirror-u üçün: NODE_IMAGE və NGINX_IMAGE dəyişənlərini .env faylında təyin edin.
+
+x-image-args: &image-args
+  NODE_IMAGE: ${NODE_IMAGE:-node:22-alpine}
+  NGINX_IMAGE: ${NGINX_IMAGE:-nginx:1.27-alpine}
+
+services:
+  shell:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: shell
+      args:
+        <<: *image-args
+        APP: shell
+    container_name: exam-shell
+    environment:
+      API_UPSTREAM: ${API_UPSTREAM:-http://host.docker.internal:5099}
+      MFE_LESSONS_URL: http://localhost:8081
+      MFE_STUDENTS_URL: http://localhost:8082
+      MFE_EXAMS_URL: http://localhost:8083
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8080:80"
+    depends_on: [mfe-lessons, mfe-students, mfe-exams]
+
+  mfe-lessons:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: remote
+      args:
+        <<: *image-args
+        APP: mfe-lessons
+    container_name: exam-mfe-lessons
+    ports:
+      - "8081:80"
+
+  mfe-students:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: remote
+      args:
+        <<: *image-args
+        APP: mfe-students
+    container_name: exam-mfe-students
+    ports:
+      - "8082:80"
+
+  mfe-exams:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: remote
+      args:
+        <<: *image-args
+        APP: mfe-exams
+    container_name: exam-mfe-exams
+    ports:
+      - "8083:80"

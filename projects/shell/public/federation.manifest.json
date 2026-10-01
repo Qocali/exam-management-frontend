@@ -1,0 +1,5 @@
+{
+  "mfe-lessons": "http://localhost:4201/remoteEntry.json",
+  "mfe-students": "http://localhost:4202/remoteEntry.json",
+  "mfe-exams": "http://localhost:4203/remoteEntry.json"
+}

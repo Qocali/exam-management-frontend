@@ -1,0 +1,97 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="flex items-center justify-between border-b border-line px-6 py-4">
+    <h2 id="exam-form-title" class="font-display text-xl font-bold">
+      {{ (isEdit ? 'exams.form.editTitle' : 'exams.form.createTitle') | t }}
+    </h2>
+    <button type="button" class="icon-btn" [attr.aria-label]="'common.close' | t" [disabled]="saving()" (click)="dialogRef.close()">
+      <exam-icon name="close" />
+    </button>
+  </div>
+
+  <div class="flex flex-col gap-4 px-6 py-5">
+    @if (serverError(); as message) {
+      <div class="alert alert-error" role="alert">
+        <exam-icon name="alert" class="mt-0.5" />
+        <span>{{ message }}</span>
+      </div>
+    }
+
+    @if (exam; as e) {
+      <dl class="grid gap-3 rounded-md bg-paper p-4 sm:grid-cols-3">
+        <div>
+          <dt class="eyebrow">{{ 'exams.field.lesson' | t }}</dt>
+          <dd class="mt-1"><span class="code-badge">{{ e.lessonCode }}</span> {{ e.lessonName }}</dd>
+        </div>
+        <div>
+          <dt class="eyebrow">{{ 'exams.field.student' | t }}</dt>
+          <dd class="mt-1">{{ e.studentFullName }}</dd>
+        </div>
+        <div>
+          <dt class="eyebrow">{{ 'exams.field.class' | t }}</dt>
+          <dd class="mt-1">{{ e.classNumber | classLabel }}</dd>
+        </div>
+      </dl>
+    } @else {
+      @if (data.lessons.length === 0 || data.students.length === 0) {
+        <div class="alert alert-info">
+          <exam-icon name="info" class="mt-0.5" />
+          <span>{{ 'exams.form.noReferenceData' | t }}</span>
+        </div>
+      }
+
+      <exam-field [label]="'exams.field.lesson' | t" [control]="form.controls.lessonCode">
+        <select examControl formControlName="lessonCode">
+          <option [ngValue]="null" disabled>{{ 'common.select' | t }}</option>
+          @for (lesson of lessons; track lesson.code) {
+            <option [ngValue]="lesson.code">{{ lesson.code }} — {{ lesson.name }} ({{ lesson.classNumber | classLabel }})</option>
+          }
+        </select>
+      </exam-field>
+
+      <exam-field [label]="'exams.field.student' | t" [hint]="studentHint()" [control]="form.controls.studentNumber">
+        <select examControl formControlName="studentNumber">
+          <option [ngValue]="null" disabled>{{ (selectedLesson() ? 'common.select' : 'exams.form.selectLessonFirst') | t }}</option>
+          @for (student of eligibleStudents(); track student.number) {
+            <option [ngValue]="student.number">{{ student.number }} — {{ student.lastName }} {{ student.firstName }}</option>
+          }
+        </select>
+      </exam-field>
+    }
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <exam-field
+        [label]="'exams.form.examDate' | t"
+        [hint]="'exams.form.examDateHint' | t"
+        [control]="form.controls.examDate"
+      >
+        <input examControl type="date" formControlName="examDate" class="tnum" [max]="today" />
+      </exam-field>
+
+      <fieldset class="field">
+        <legend class="field-label mb-1">{{ 'exams.form.score' | t }}</legend>
+        <div class="flex gap-2">
+          @for (n of scores; track n) {
+            <label class="relative cursor-pointer" [attr.data-score]="n" [title]="n | gradeWord">
+              <input type="radio" class="peer sr-only" formControlName="score" [value]="n" />
+              <span
+                class="grid size-11 place-items-center rounded-md border border-line bg-surface font-hand text-[28px] leading-none font-bold text-muted transition-colors peer-checked:border-[var(--g-fg)] peer-checked:bg-[var(--g-bg)] peer-checked:text-[var(--g-fg)] peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ink"
+              >
+                {{ n }}
+              </span>
+            </label>
+          }
+        </div>
+        @if (scoreError(); as errors) {
+          <p class="field-error">{{ errors | errorMessage: { required: ('exams.form.scoreRequired' | t) } }}</p>
+        }
+      </fieldset>
+    </div>
+  </div>
+
+  <div class="flex justify-end gap-2 border-t border-line px-6 py-4">
+    <button type="button" class="btn btn-ghost" [disabled]="saving()" (click)="dialogRef.close()">{{ 'common.cancel' | t }}</button>
+    <button type="submit" class="btn btn-primary" [disabled]="saving()">
+      {{ (saving() ? 'common.saving' : 'common.save') | t }}
+    </button>
+  </div>
+</form>

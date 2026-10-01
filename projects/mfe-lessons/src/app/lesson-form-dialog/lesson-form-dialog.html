@@ -1,0 +1,64 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="flex items-center justify-between border-b border-line px-6 py-4">
+    <h2 id="lesson-form-title" class="font-display text-xl font-bold">{{ (isEdit ? 'lessons.form.editTitle' : 'lessons.new') | t }}</h2>
+    <button type="button" class="icon-btn" [attr.aria-label]="'common.close' | t" [disabled]="saving()" (click)="dialogRef.close()">
+      <exam-icon name="close" />
+    </button>
+  </div>
+
+  <div class="flex flex-col gap-4 px-6 py-5">
+    @if (serverError(); as message) {
+      <div class="alert alert-error" role="alert">
+        <exam-icon name="alert" class="mt-0.5" />
+        <span>{{ message }}</span>
+      </div>
+    }
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <exam-field [label]="'lessons.field.code' | t" [hint]="'lessons.field.codeHint' | t" [control]="form.controls.code" [messages]="codeMessages()">
+        <input
+          examControl
+          formControlName="code"
+          class="font-mono uppercase tracking-widest"
+          autocomplete="off"
+          [attr.maxlength]="rules.lessonCodeLength"
+        />
+      </exam-field>
+
+      <exam-field [label]="'lessons.field.class' | t" [control]="form.controls.classNumber">
+        <select examControl formControlName="classNumber">
+          <option [ngValue]="null" disabled>{{ 'common.select' | t }}</option>
+          @for (n of classNumbers; track n) {
+            <option [ngValue]="n">{{ n | classLabel }}</option>
+          }
+        </select>
+      </exam-field>
+
+      <exam-field class="sm:col-span-2" [label]="'lessons.field.name' | t" [control]="form.controls.name" [maxBytes]="rules.lessonNameMaxBytes">
+        <input examControl formControlName="name" autocomplete="off" />
+      </exam-field>
+
+      <exam-field [label]="'lessons.field.teacherFirstName' | t" [control]="form.controls.teacherFirstName" [maxBytes]="rules.teacherNameMaxBytes">
+        <input examControl formControlName="teacherFirstName" autocomplete="off" />
+      </exam-field>
+
+      <exam-field [label]="'lessons.field.teacherLastName' | t" [control]="form.controls.teacherLastName" [maxBytes]="rules.teacherNameMaxBytes">
+        <input examControl formControlName="teacherLastName" autocomplete="off" />
+      </exam-field>
+    </div>
+
+    <p class="text-xs text-muted">
+      {{ 'lessons.form.bytesNote' | t }}
+      @if (isEdit) {
+        {{ 'lessons.form.classLocked' | t }}
+      }
+    </p>
+  </div>
+
+  <div class="flex justify-end gap-2 border-t border-line px-6 py-4">
+    <button type="button" class="btn btn-ghost" [disabled]="saving()" (click)="dialogRef.close()">{{ 'common.cancel' | t }}</button>
+    <button type="submit" class="btn btn-primary" [disabled]="saving()">
+      {{ (saving() ? 'common.saving' : 'common.save') | t }}
+    </button>
+  </div>
+</form>
