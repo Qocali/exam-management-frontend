@@ -17,6 +17,7 @@ import {
 } from '@exam/shared';
 import { filter } from 'rxjs';
 
+import { APP_ENVIRONMENT } from '../environment';
 import { ChangePasswordDialog } from './change-password-dialog';
 
 interface NavItem {
@@ -43,6 +44,8 @@ interface ThemeOption {
 export class ShellLayout {
   protected readonly auth = inject(AuthService);
   protected readonly theme = inject(ThemeService);
+  /** Staging build-də səhifənin yuxarısında xəbərdarlıq zolağı göstərilir. */
+  protected readonly isStaging = APP_ENVIRONMENT === 'staging';
   private readonly confirm = inject(ConfirmService);
   private readonly dialog = inject(ExamDialog);
   private readonly notify = inject(NotificationService);
@@ -52,6 +55,7 @@ export class ShellLayout {
     { path: '/', labelKey: 'module.home', icon: 'home', exact: true },
     { path: '/lessons', labelKey: 'module.lessons', icon: 'book', exact: false },
     { path: '/students', labelKey: 'module.students', icon: 'users', exact: false },
+    { path: '/teachers', labelKey: 'module.teachers', icon: 'teacher', exact: false },
     { path: '/exams', labelKey: 'module.exams', icon: 'check', exact: false },
     ...(this.auth.canManageCatalog()
       ? [{ path: '/users', labelKey: 'module.users', icon: 'key', exact: false } satisfies NavItem]

@@ -44,6 +44,16 @@
       <exam-field [label]="'students.field.lastName' | t" [control]="form.controls.lastName" [maxBytes]="rules.studentNameMaxBytes">
         <input examControl formControlName="lastName" autocomplete="off" />
       </exam-field>
+
+      <exam-field class="sm:col-span-2" [label]="'students.field.teacher' | t" [hint]="'students.field.teacherHint' | t" [control]="form.controls.teacherId">
+        <select examControl formControlName="teacherId">
+          <!-- Sinif rəhbəri məcburi deyil: "təyin olunmayıb" seçilə bilən dəyərdir. -->
+          <option [ngValue]="null">{{ (teachers.loading() ? 'common.loading' : 'students.field.teacherNone') | t }}</option>
+          @for (teacher of teachers.items(); track teacher.id) {
+            <option [ngValue]="teacher.id">{{ teacher.lastName }} {{ teacher.firstName }}</option>
+          }
+        </select>
+      </exam-field>
     </div>
 
     @if (isEdit) {

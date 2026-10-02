@@ -16,6 +16,7 @@ import {
   formatNumber,
   listResource,
 } from '@exam/shared';
+import { map } from 'rxjs';
 
 interface Step {
   order: number;
@@ -40,7 +41,9 @@ export class Home {
 
   protected readonly lessons = listResource(() => this.lessonsApi.list());
   protected readonly students = listResource(() => this.studentsApi.list());
-  protected readonly exams = listResource(() => this.examsApi.list());
+  // Backend imtahan siyahısını səhifələyir; ExamsApi səhifələri birləşdirir, ona görə
+  // ana səhifədəki say, orta qiymət və bölgü bütün nəticələr üzrə dəqiq qalır.
+  protected readonly exams = listResource(() => this.examsApi.list().pipe(map((page) => page.items)));
 
   protected readonly error = computed(() => this.lessons.error() ?? this.students.error() ?? this.exams.error());
 

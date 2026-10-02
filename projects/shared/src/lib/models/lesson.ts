@@ -6,12 +6,18 @@ export interface Lesson {
   name: string;
   /** number(2,0), 1–11 */
   classNumber: number;
-  /** varchar(20) */
+  /** Dərsi tədris edən müəllim (Teachers cədvəli) */
+  teacherId: number;
+  /** Müəllimin adı — siyahını ayrıca sorğusuz göstərmək üçün backend birləşdirir */
   teacherFirstName: string;
-  /** varchar(20) */
   teacherLastName: string;
 }
 
-export type CreateLessonRequest = Lesson;
+export interface CreateLessonRequest {
+  code: string;
+  name: string;
+  classNumber: number;
+  teacherId: number;
+}
 
-export type UpdateLessonRequest = Omit<Lesson, 'code'>;
+export type UpdateLessonRequest = Omit<CreateLessonRequest, 'code'>;

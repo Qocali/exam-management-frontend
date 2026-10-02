@@ -10,3 +10,8 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+# Mühit faylları (secret/ünvanlar) — yalnız *.example faylları commit olunur
+.env
+.env.*
+!.env.*.example

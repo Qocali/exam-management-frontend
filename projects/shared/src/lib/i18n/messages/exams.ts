@@ -29,6 +29,13 @@ export const examsMessages = defineMessages({
     'exams.stats.distribution': 'Bölgü',
 
     'exams.table.caption': 'İmtahan nəticələri',
+
+    'exams.page.label': 'Səhifələmə',
+    'exams.page.range': '{from}–{to} / {total}',
+    'exams.page.of': '{page} / {pages}',
+    'exams.page.prev': 'Əvvəlki',
+    'exams.page.next': 'Sonrakı',
+
     'exams.row.editAria': '{student}, {lesson}: redaktə et',
     'exams.row.deleteAria': '{student}, {lesson}: sil',
     'exams.empty.filtered': 'Filtrlərə uyğun nəticə tapılmadı.',
@@ -80,6 +87,13 @@ export const examsMessages = defineMessages({
     'exams.stats.distribution': 'Distribution',
 
     'exams.table.caption': 'Exam results',
+
+    'exams.page.label': 'Pagination',
+    'exams.page.range': '{from}–{to} of {total}',
+    'exams.page.of': '{page} of {pages}',
+    'exams.page.prev': 'Previous',
+    'exams.page.next': 'Next',
+
     'exams.row.editAria': 'Edit: {student}, {lesson}',
     'exams.row.deleteAria': 'Delete: {student}, {lesson}',
     'exams.empty.filtered': 'No results match the filters.',
@@ -131,6 +145,13 @@ export const examsMessages = defineMessages({
     'exams.stats.distribution': 'Распределение',
 
     'exams.table.caption': 'Результаты экзаменов',
+
+    'exams.page.label': 'Постраничная навигация',
+    'exams.page.range': '{from}–{to} из {total}',
+    'exams.page.of': '{page} из {pages}',
+    'exams.page.prev': 'Назад',
+    'exams.page.next': 'Вперёд',
+
     'exams.row.editAria': 'Изменить: {student}, {lesson}',
     'exams.row.deleteAria': 'Удалить: {student}, {lesson}',
     'exams.empty.filtered': 'Результаты, соответствующие фильтрам, не найдены.',

@@ -11,8 +11,10 @@ import {
   Lesson,
   LessonsApi,
   SchoolRules,
+  TeachersApi,
   TranslatePipe,
   applyServerErrors,
+  listResource,
   requiredText,
   toApiError,
   translate,
@@ -45,15 +47,18 @@ export class LessonFormDialog {
   protected readonly serverError = signal<string | null>(null);
   protected readonly codeMessages = computed(() => ({ pattern: translate('lessons.field.codePattern') }));
 
+  /** Müəllim siyahısı select üçün (GET /api/teachers). */
+  protected readonly teachers = listResource(() => inject(TeachersApi).list());
+
   protected readonly form = this.fb.group({
     code: ['', [Validators.required, Validators.pattern(LESSON_CODE_PATTERN)]],
     name: ['', requiredText(SchoolRules.lessonNameMaxBytes)],
     classNumber: this.fb.control<number | null>(null, Validators.required),
-    teacherFirstName: ['', requiredText(SchoolRules.teacherNameMaxBytes)],
-    teacherLastName: ['', requiredText(SchoolRules.teacherNameMaxBytes)],
+    teacherId: this.fb.control<number | null>(null, Validators.required),
   });
 
   constructor() {
+    this.teachers.reload();
     if (this.lesson) {
       this.form.patchValue(this.lesson);
       // Kod açar sahədir — backend-də dəyişdirilmir.
@@ -72,8 +77,7 @@ export class LessonFormDialog {
     const body = {
       name: value.name.trim(),
       classNumber: value.classNumber!,
-      teacherFirstName: value.teacherFirstName.trim(),
-      teacherLastName: value.teacherLastName.trim(),
+      teacherId: value.teacherId!,
     };
     const request$: Observable<Lesson> = this.lesson
       ? this.api.update(this.lesson.code, body)

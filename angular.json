@@ -24,6 +24,7 @@
           "options": {},
           "configurations": {
             "production": { "target": "shell:esbuild:production" },
+            "staging": { "target": "shell:esbuild:staging" },
             "development": { "target": "shell:esbuild:development", "dev": true }
           },
           "defaultConfiguration": "production"
@@ -54,12 +55,23 @@
                 { "type": "initial", "maximumWarning": "1MB", "maximumError": "2MB" },
                 { "type": "anyComponentStyle", "maximumWarning": "8kB", "maximumError": "16kB" }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "define": { "EXAM_ENVIRONMENT": "'production'" }
+            },
+            "staging": {
+              "budgets": [
+                { "type": "initial", "maximumWarning": "1MB", "maximumError": "2MB" },
+                { "type": "anyComponentStyle", "maximumWarning": "8kB", "maximumError": "16kB" }
+              ],
+              "outputHashing": "all",
+              "sourceMap": true,
+              "define": { "EXAM_ENVIRONMENT": "'staging'" }
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "define": { "EXAM_ENVIRONMENT": "'development'" }
             }
           },
           "defaultConfiguration": "production"
@@ -68,6 +80,7 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": { "buildTarget": "shell:esbuild:production" },
+            "staging": { "buildTarget": "shell:esbuild:staging" },
             "development": { "buildTarget": "shell:esbuild:development" }
           },
           "defaultConfiguration": "development",
@@ -86,6 +99,7 @@
           "options": {},
           "configurations": {
             "production": { "target": "mfe-lessons:esbuild:production" },
+            "staging": { "target": "mfe-lessons:esbuild:staging" },
             "development": { "target": "mfe-lessons:esbuild:development", "dev": true }
           },
           "defaultConfiguration": "production"
@@ -115,12 +129,23 @@
                 { "type": "initial", "maximumWarning": "1MB", "maximumError": "2MB" },
                 { "type": "anyComponentStyle", "maximumWarning": "8kB", "maximumError": "16kB" }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "define": { "EXAM_ENVIRONMENT": "'production'" }
+            },
+            "staging": {
+              "budgets": [
+                { "type": "initial", "maximumWarning": "1MB", "maximumError": "2MB" },
+                { "type": "anyComponentStyle", "maximumWarning": "8kB", "maximumError": "16kB" }
+              ],
+              "outputHashing": "all",
+              "sourceMap": true,
+              "define": { "EXAM_ENVIRONMENT": "'staging'" }
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "define": { "EXAM_ENVIRONMENT": "'development'" }
             }
           },
           "defaultConfiguration": "production"
@@ -129,6 +154,7 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": { "buildTarget": "mfe-lessons:esbuild:production" },
+            "staging": { "buildTarget": "mfe-lessons:esbuild:staging" },
             "development": { "buildTarget": "mfe-lessons:esbuild:development" }
           },
           "defaultConfiguration": "development",
@@ -147,6 +173,7 @@
           "options": {},
           "configurations": {
             "production": { "target": "mfe-students:esbuild:production" },
+            "staging": { "target": "mfe-students:esbuild:staging" },
             "development": { "target": "mfe-students:esbuild:development", "dev": true }
           },
           "defaultConfiguration": "production"
@@ -176,12 +203,23 @@
                 { "type": "initial", "maximumWarning": "1MB", "maximumError": "2MB" },
                 { "type": "anyComponentStyle", "maximumWarning": "8kB", "maximumError": "16kB" }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "define": { "EXAM_ENVIRONMENT": "'production'" }
+            },
+            "staging": {
+              "budgets": [
+                { "type": "initial", "maximumWarning": "1MB", "maximumError": "2MB" },
+                { "type": "anyComponentStyle", "maximumWarning": "8kB", "maximumError": "16kB" }
+              ],
+              "outputHashing": "all",
+              "sourceMap": true,
+              "define": { "EXAM_ENVIRONMENT": "'staging'" }
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "define": { "EXAM_ENVIRONMENT": "'development'" }
             }
           },
           "defaultConfiguration": "production"
@@ -190,6 +228,7 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": { "buildTarget": "mfe-students:esbuild:production" },
+            "staging": { "buildTarget": "mfe-students:esbuild:staging" },
             "development": { "buildTarget": "mfe-students:esbuild:development" }
           },
           "defaultConfiguration": "development",
@@ -208,6 +247,7 @@
           "options": {},
           "configurations": {
             "production": { "target": "mfe-exams:esbuild:production" },
+            "staging": { "target": "mfe-exams:esbuild:staging" },
             "development": { "target": "mfe-exams:esbuild:development", "dev": true }
           },
           "defaultConfiguration": "production"
@@ -237,12 +277,23 @@
                 { "type": "initial", "maximumWarning": "1MB", "maximumError": "2MB" },
                 { "type": "anyComponentStyle", "maximumWarning": "8kB", "maximumError": "16kB" }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "define": { "EXAM_ENVIRONMENT": "'production'" }
+            },
+            "staging": {
+              "budgets": [
+                { "type": "initial", "maximumWarning": "1MB", "maximumError": "2MB" },
+                { "type": "anyComponentStyle", "maximumWarning": "8kB", "maximumError": "16kB" }
+              ],
+              "outputHashing": "all",
+              "sourceMap": true,
+              "define": { "EXAM_ENVIRONMENT": "'staging'" }
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "define": { "EXAM_ENVIRONMENT": "'development'" }
             }
           },
           "defaultConfiguration": "production"
@@ -251,6 +302,7 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": { "buildTarget": "mfe-exams:esbuild:production" },
+            "staging": { "buildTarget": "mfe-exams:esbuild:staging" },
             "development": { "buildTarget": "mfe-exams:esbuild:development" }
           },
           "defaultConfiguration": "development",

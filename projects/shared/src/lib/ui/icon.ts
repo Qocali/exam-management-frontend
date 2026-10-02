@@ -20,7 +20,8 @@ export type IconName =
   | 'chevron'
   | 'offline'
   | 'logout'
-  | 'key';
+  | 'key'
+  | 'teacher';
 
 /**
  * Inline SVG ikonlar — xarici ikon fontundan asılılıq yoxdur (korporativ şəbəkədə də işləyir).
@@ -81,6 +82,11 @@ export type IconName =
         @case ('info') {
           <circle cx="12" cy="12" r="9" />
           <path d="M12 11v5M12 8h.01" />
+        }
+        @case ('teacher') {
+          <rect x="9" y="3" width="12" height="9" rx="1" />
+          <circle cx="6" cy="9" r="2.5" />
+          <path d="M2 21v-2a4 4 0 0 1 4-4h1.5l3.5-3" />
         }
         @case ('chevron') { <path d="m8 10 4 4 4-4" /> }
         @case ('logout') {

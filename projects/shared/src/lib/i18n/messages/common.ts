@@ -30,6 +30,7 @@ export const commonMessages = defineMessages({
     'module.home': 'Ana səhifə',
     'module.lessons': 'Dərslər',
     'module.students': 'Şagirdlər',
+    'module.teachers': 'Müəllimlər',
     'module.exams': 'İmtahanlar',
     'module.users': 'İstifadəçilər',
 
@@ -115,6 +116,7 @@ export const commonMessages = defineMessages({
     'module.home': 'Home',
     'module.lessons': 'Subjects',
     'module.students': 'Students',
+    'module.teachers': 'Teachers',
     'module.exams': 'Exams',
     'module.users': 'Users',
 
@@ -199,6 +201,7 @@ export const commonMessages = defineMessages({
     'module.home': 'Главная',
     'module.lessons': 'Предметы',
     'module.students': 'Ученики',
+    'module.teachers': 'Учителя',
     'module.exams': 'Экзамены',
     'module.users': 'Пользователи',
 

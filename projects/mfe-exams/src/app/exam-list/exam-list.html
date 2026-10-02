@@ -100,7 +100,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (exam of sort.sorted(); track exam.id) {
+        @for (exam of pagedExams(); track exam.id) {
           <tr>
             <td class="tnum whitespace-nowrap">{{ exam.examDate | azDate }}</td>
             <td>
@@ -139,13 +139,12 @@
           </tr>
         } @empty {
           <tr>
-            <td colspan="6" class="py-12 text-center text-muted">
+            <td colspan="6" class="px-4 py-12 text-center text-muted">
               @if (exams.loading()) {
                 {{ 'common.loading' | t }}
-              } @else if (hasFilters()) {
-                {{ 'exams.empty.filtered' | t }}
               } @else {
-                {{ 'exams.empty.none' | t }}
+                <exam-illustration [name]="hasFilters() ? 'search' : 'exams'" class="mb-4" />
+                <p>{{ (hasFilters() ? 'exams.empty.filtered' : 'exams.empty.none') | t }}</p>
               }
             </td>
           </tr>
@@ -153,4 +152,41 @@
       </tbody>
     </table>
   </div>
+
+  @if (hasPages()) {
+    <nav
+      class="flex flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-3"
+      [attr.aria-label]="'exams.page.label' | t"
+    >
+      <p class="tnum text-sm text-muted" aria-live="polite">
+        {{ 'exams.page.range' | t: { from: range().from, to: range().to, total: range().total } }}
+      </p>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          class="btn btn-ghost"
+          [disabled]="currentPage() <= 1"
+          (click)="goToPage(currentPage() - 1)"
+        >
+          <exam-icon name="chevron" class="rotate-90" />
+          {{ 'exams.page.prev' | t }}
+        </button>
+
+        <span class="tnum px-1 text-sm text-muted">
+          {{ 'exams.page.of' | t: { page: currentPage(), pages: pageCount() } }}
+        </span>
+
+        <button
+          type="button"
+          class="btn btn-ghost"
+          [disabled]="currentPage() >= pageCount()"
+          (click)="goToPage(currentPage() + 1)"
+        >
+          {{ 'exams.page.next' | t }}
+          <exam-icon name="chevron" class="-rotate-90" />
+        </button>
+      </div>
+    </nav>
+  }
 </div>

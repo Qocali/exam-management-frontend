@@ -66,7 +66,12 @@
             <td><span class="code-badge">{{ lesson.code }}</span></td>
             <td class="font-medium">{{ lesson.name }}</td>
             <td><span class="class-badge">{{ lesson.classNumber | classLabel }}</span></td>
-            <td>{{ lesson.teacherFirstName }} {{ lesson.teacherLastName }}</td>
+            <td>
+              <span class="flex items-center gap-2">
+                <exam-avatar kind="teacher" class="size-10" [firstName]="lesson.teacherFirstName" [lastName]="lesson.teacherLastName" />
+                {{ lesson.teacherFirstName }} {{ lesson.teacherLastName }}
+              </span>
+            </td>
             <td class="w-px whitespace-nowrap text-right">
               <a
                 class="icon-btn"
@@ -89,13 +94,13 @@
           </tr>
         } @empty {
           <tr>
-            <td colspan="5" class="py-12 text-center text-muted">
+            <td colspan="5" class="px-4 py-12 text-center text-muted">
               @if (lessons.loading()) {
                 {{ 'common.loading' | t }}
-              } @else if (search() || classFilter()) {
-                {{ 'lessons.empty.filtered' | t }}
               } @else {
-                {{ 'lessons.empty.none' | t }}
+                @let filtered = search() !== '' || classFilter() !== null;
+                <exam-illustration [name]="filtered ? 'search' : 'lessons'" class="mb-4" />
+                <p>{{ (filtered ? 'lessons.empty.filtered' : 'lessons.empty.none') | t }}</p>
               }
             </td>
           </tr>

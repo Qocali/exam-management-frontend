@@ -35,6 +35,12 @@ export const routes: Routes = [
       { path: 'students', loadChildren: loadRemoteRoutes('mfe-students', 'module.students') },
       { path: 'exams', loadChildren: loadRemoteRoutes('mfe-exams', 'module.exams') },
       {
+        // Oxumaq hamıya açıqdır; yazma düymələri yalnız Admin-ə görünür (backend: ManageCatalog).
+        path: 'teachers',
+        loadComponent: () => import('./pages/teachers/teachers-page').then((m) => m.TeachersPage),
+        title: 'module.teachers',
+      },
+      {
         path: 'users',
         canMatch: [roleGuard('Admin')],
         loadComponent: () => import('./pages/users/users-page').then((m) => m.UsersPage),

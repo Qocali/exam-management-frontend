@@ -10,9 +10,11 @@ import {
   SchoolRules,
   Student,
   StudentsApi,
+  TeachersApi,
   TranslatePipe,
   applyServerErrors,
   integer,
+  listResource,
   requiredText,
   toApiError,
 } from '@exam/shared';
@@ -54,9 +56,15 @@ export class StudentFormDialog {
     firstName: ['', requiredText(SchoolRules.studentNameMaxBytes)],
     lastName: ['', requiredText(SchoolRules.studentNameMaxBytes)],
     classNumber: this.fb.control<number | null>(null, Validators.required),
+    /** Sinif rəhbəri — məcburi deyil. */
+    teacherId: this.fb.control<number | null>(null),
   });
 
+  /** Müəllim siyahısı select üçün (GET /api/teachers). */
+  protected readonly teachers = listResource(() => inject(TeachersApi).list());
+
   constructor() {
+    this.teachers.reload();
     if (this.student) {
       this.form.patchValue(this.student);
       // Nömrə açar sahədir — backend-də dəyişdirilmir.
@@ -76,6 +84,7 @@ export class StudentFormDialog {
       firstName: value.firstName.trim(),
       lastName: value.lastName.trim(),
       classNumber: value.classNumber!,
+      teacherId: value.teacherId,
     };
     const request$: Observable<Student> = this.student
       ? this.api.update(this.student.number, body)

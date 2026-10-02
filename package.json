@@ -11,6 +11,7 @@
     "start:students": "ng serve mfe-students",
     "start:exams": "ng serve mfe-exams",
     "build": "ng build shell && ng build mfe-lessons && ng build mfe-students && ng build mfe-exams",
+    "build:staging": "ng build shell -c staging && ng build mfe-lessons -c staging && ng build mfe-students -c staging && ng build mfe-exams -c staging",
     "test": "ng test shared --watch=false"
   },
   "dependencies": {

@@ -57,6 +57,7 @@
           <th scope="col" [attr.aria-sort]="sort.ariaSort('lastName')"><button examSortButton="lastName" [sort]="sort">{{ 'students.field.lastName' | t }}</button></th>
           <th scope="col" [attr.aria-sort]="sort.ariaSort('firstName')"><button examSortButton="firstName" [sort]="sort">{{ 'students.field.firstName' | t }}</button></th>
           <th scope="col" [attr.aria-sort]="sort.ariaSort('classNumber')"><button examSortButton="classNumber" [sort]="sort">{{ 'students.field.class' | t }}</button></th>
+          <th scope="col" [attr.aria-sort]="sort.ariaSort('teacher')"><button examSortButton="teacher" [sort]="sort">{{ 'students.field.teacher' | t }}</button></th>
           <th scope="col"><span class="sr-only">{{ 'common.actions' | t }}</span></th>
         </tr>
       </thead>
@@ -64,9 +65,24 @@
         @for (student of sort.sorted(); track student.number) {
           <tr>
             <td class="tnum font-mono">{{ student.number }}</td>
-            <td class="font-medium">{{ student.lastName }}</td>
+            <td class="font-medium">
+              <span class="flex items-center gap-2">
+                <exam-avatar kind="student" class="size-10" [firstName]="student.firstName" [lastName]="student.lastName" />
+                {{ student.lastName }}
+              </span>
+            </td>
             <td>{{ student.firstName }}</td>
             <td><span class="class-badge">{{ student.classNumber | classLabel }}</span></td>
+            <td>
+              @if (student.teacherId !== null) {
+                <span class="flex items-center gap-2 text-sm">
+                  <exam-avatar kind="teacher" class="size-8" [firstName]="student.teacherFirstName" [lastName]="student.teacherLastName" />
+                  {{ student.teacherFirstName }} {{ student.teacherLastName }}
+                </span>
+              } @else {
+                <span class="text-sm text-muted">—</span>
+              }
+            </td>
             <td class="w-px whitespace-nowrap text-right">
               <a
                 class="icon-btn"
@@ -101,13 +117,13 @@
           </tr>
         } @empty {
           <tr>
-            <td colspan="5" class="py-12 text-center text-muted">
+            <td colspan="6" class="px-4 py-12 text-center text-muted">
               @if (students.loading()) {
                 {{ 'common.loading' | t }}
-              } @else if (search() || classFilter()) {
-                {{ 'students.empty.filtered' | t }}
               } @else {
-                {{ 'students.empty.none' | t }}
+                @let filtered = search() !== '' || classFilter() !== null;
+                <exam-illustration [name]="filtered ? 'search' : 'students'" class="mb-4" />
+                <p>{{ (filtered ? 'students.empty.filtered' : 'students.empty.none') | t }}</p>
               }
             </td>
           </tr>

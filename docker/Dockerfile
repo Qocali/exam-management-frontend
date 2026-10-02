@@ -1,6 +1,7 @@
 # Multi-stage build: bir Dockerfile bütün tətbiqlər üçün.
 #   docker build -f docker/Dockerfile --build-arg APP=mfe-lessons --target remote -t exam/mfe-lessons .
 #   docker build -f docker/Dockerfile --build-arg APP=shell       --target shell  -t exam/shell .
+#   staging build: --build-arg BUILD_CONFIGURATION=staging
 #
 # Korporativ mühitdə baza image-ləri daxili registry mirror-undan götürün:
 #   --build-arg NODE_IMAGE=<registry>/node:22-alpine --build-arg NGINX_IMAGE=<registry>/nginx:1.27-alpine
@@ -17,8 +18,11 @@ COPY package*.json ./
 RUN if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
 COPY . .
 ARG APP
+# production (default) | staging — staging: source map + "SINAQ MÜHİTİ" zolağı
+ARG BUILD_CONFIGURATION=production
 RUN test -n "$APP" || (echo "APP build-arg mütləqdir" && exit 1)
-RUN npx ng build "$APP" --configuration production
+RUN case "$BUILD_CONFIGURATION" in production|staging) ;; *) echo "BUILD_CONFIGURATION: production və ya staging olmalıdır" && exit 1 ;; esac
+RUN npx ng build "$APP" --configuration "$BUILD_CONFIGURATION"
 
 # ---------- remote (mfe-*) ----------
 FROM ${NGINX_IMAGE} AS remote

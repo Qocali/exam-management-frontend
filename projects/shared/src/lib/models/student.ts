@@ -8,8 +8,18 @@ export interface Student {
   lastName: string;
   /** number(2,0), 1–11 */
   classNumber: number;
+  /** Sinif rəhbəri — məcburi deyil */
+  teacherId: number | null;
+  teacherFirstName: string | null;
+  teacherLastName: string | null;
 }
 
-export type CreateStudentRequest = Student;
+export interface CreateStudentRequest {
+  number: number;
+  firstName: string;
+  lastName: string;
+  classNumber: number;
+  teacherId: number | null;
+}
 
-export type UpdateStudentRequest = Omit<Student, 'number'>;
+export type UpdateStudentRequest = Omit<CreateStudentRequest, 'number'>;

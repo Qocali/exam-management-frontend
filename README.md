@@ -53,7 +53,7 @@ Backend: [`D:\exam-management-service`](../exam-management-service) — API müq
 | `POST /api/lessons`, `PUT/DELETE /api/lessons/{code}` | Dərs formu, silmə (409 → "imtahan nəticələri var") |
 | `GET /api/students?classNumber=` | `StudentsApi.list()` |
 | `POST /api/students`, `PUT/DELETE /api/students/{number}` | Şagird formu, silmə |
-| `GET /api/exams?lessonCode=&studentNumber=&from=&to=` | İmtahan filtrləri |
+| `GET /api/exams?lessonCode=&studentNumber=&from=&to=&page=&pageSize=` | İmtahan filtrləri; cavab səhifələnir (`X-Total-Count` başlığı) |
 | `POST /api/exams`, `PUT/DELETE /api/exams/{id}` | Nəticə formu (redaktədə yalnız tarix + qiymət) |
 | `Accept-Language` başlığı (`az`/`en`/`ru`) | Hər sorğuya interfeysdə seçilmiş dil əlavə olunur (`acceptLanguageInterceptor`) — backend xətaları da həmin dildə gəlir |
 | `ProblemDetails` / `ValidationProblemDetails` | `toApiError()` — validasiya xətaları uyğun form sahəsinin altında, digərləri formanın yuxarısında |
@@ -191,6 +191,11 @@ Korporativ mühitdə `NODE_IMAGE` / `NGINX_IMAGE` build arqumentləri ilə daxil
 
 - JWT `sessionStorage`-da saxlanılır, XSS zamanı oxuna bilər. Risk Content-Security-Policy ilə azaldılmalıdır; daha güclü variant (HttpOnly cookie və ya BFF) backend dəyişikliyi tələb edir və Information Security ilə razılaşdırılmalıdır.
 - Refresh token yoxdur: token müddəti bitəndə (default 60 dəqiqə) istifadəçi yenidən daxil olur.
-- Backend paging dəstəkləmir; siyahılar tam yüklənir, sıralama client tərəfdədir. Böyük həcmlər üçün backend-ə paging əlavə edilməlidir.
+- `GET /api/exams` backend tərəfdə səhifələnir (default 100, maksimum 500; ümumi say `X-Total-Count` başlığında).
+  `ExamsApi.list()` səhifələri `pageSize=500` ilə ardıcıl çəkib birləşdirir, cədvəl isə client tərəfdə 100 sətirlik
+  səhifələrə bölünür. Beləliklə statistika (orta qiymət, bölgü) və sıralama **bütün** uyğun nəticələr üzrə dəqiq qalır.
+  Təhlükəsizlik limiti 50 sorğudur (≈25 000 nəticə); bundan böyük həcmlər üçün backend-ə statistika endpoint-i və
+  server tərəfli sıralama əlavə edilməlidir ki, hamısını çəkməyə ehtiyac qalmasın.
+- Dərslər və şagirdlər siyahıları səhifələnmir (backend onları tam qaytarır).
 - Şriftlər Google Fonts-dan yüklənir; internetə çıxış olmayan mühitdə fallback şriftlər işləyir (ikonlar SVG olduğu üçün təsirlənmir).
 - Remote nginx-də `Access-Control-Allow-Origin: *` statik fayllar üçündür; production-da shell origin-i ilə məhdudlaşdırılmalıdır.

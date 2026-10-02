@@ -7,6 +7,8 @@ import {
   ConfirmService,
   ExamDialog,
   Icon,
+  Illustration,
+  Avatar,
   NotificationService,
   PageHeader,
   SortButton,
@@ -24,7 +26,7 @@ import { StudentFormDialog, StudentFormDialogData } from '../student-form-dialog
 
 @Component({
   selector: 'stu-student-list',
-  imports: [RouterLink, PageHeader, SortButton, Icon, ClassLabelPipe, TranslatePipe],
+  imports: [RouterLink, PageHeader, SortButton, Icon, Illustration, Avatar, ClassLabelPipe, TranslatePipe],
   templateUrl: './student-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -47,7 +49,11 @@ export class StudentList {
     const term = this.search().trim().toLocaleLowerCase('az');
     const items = this.students.items();
     return term
-      ? items.filter((s) => `${s.number} ${s.firstName} ${s.lastName}`.toLocaleLowerCase('az').includes(term))
+      ? items.filter((s) =>
+          `${s.number} ${s.firstName} ${s.lastName} ${s.teacherFirstName ?? ''} ${s.teacherLastName ?? ''}`
+            .toLocaleLowerCase('az')
+            .includes(term),
+        )
       : items;
   });
 
@@ -58,6 +64,8 @@ export class StudentList {
       lastName: (s: Student) => s.lastName,
       firstName: (s: Student) => s.firstName,
       classNumber: (s: Student) => s.classNumber,
+      // Sinif rəhbəri olmayan şagirdlər artan sıralamada sona düşsün.
+      teacher: (s: Student) => (s.teacherId === null ? '￿' : `${s.teacherLastName} ${s.teacherFirstName}`),
     },
     { key: 'number', direction: 'asc' },
   );

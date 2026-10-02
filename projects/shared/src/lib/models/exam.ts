@@ -28,3 +28,18 @@ export interface ExamFilter {
   from?: string | null;
   to?: string | null;
 }
+
+/**
+ * Backend `GET /api/exams` üçün səhifələmə limitləri
+ * (ExamManagement.Application/Common/Paging/Paging.cs ilə sinxron saxlanılmalıdır).
+ */
+export const ExamPaging = {
+  defaultPageSize: 100,
+  maxPageSize: 500,
+} as const;
+
+/** Bir sorğunun nəticəsi: elementlər + uyğun gələn ümumi say (`X-Total-Count` başlığı). */
+export interface ExamPage {
+  items: Exam[];
+  totalCount: number;
+}

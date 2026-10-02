@@ -7,6 +7,8 @@ import {
   ConfirmService,
   ExamDialog,
   Icon,
+  Illustration,
+  Avatar,
   Lesson,
   LessonsApi,
   NotificationService,
@@ -24,7 +26,7 @@ import { LessonFormDialog, LessonFormDialogData } from '../lesson-form-dialog/le
 
 @Component({
   selector: 'les-lesson-list',
-  imports: [RouterLink, PageHeader, SortButton, Icon, ClassLabelPipe, TranslatePipe],
+  imports: [RouterLink, PageHeader, SortButton, Icon, Illustration, Avatar, ClassLabelPipe, TranslatePipe],
   templateUrl: './lesson-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

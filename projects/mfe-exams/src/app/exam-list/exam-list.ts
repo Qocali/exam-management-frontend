@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, ValidatorFn } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,10 +11,12 @@ import {
   Exam,
   ExamDialog,
   ExamFilter,
+  ExamPaging,
   ExamsApi,
   Grade,
   GradeWordPipe,
   Icon,
+  Illustration,
   LessonsApi,
   NotificationService,
   PageHeader,
@@ -32,6 +34,9 @@ import {
   translate,
 } from '@exam/shared';
 import { debounceTime, filter, map, switchMap } from 'rxjs';
+
+/** Cədvəldə bir səhifədə göstərilən sətir sayı (server limiti deyil — bax: ExamsApi.list). */
+const ROWS_PER_PAGE = ExamPaging.defaultPageSize;
 
 import { ExamFormDialog, ExamFormDialogData } from '../exam-form-dialog/exam-form-dialog';
 
@@ -52,7 +57,7 @@ const dateRange: ValidatorFn = (group) => {
 
 @Component({
   selector: 'exm-exam-list',
-  imports: [ReactiveFormsModule, PageHeader, SortButton, Grade, Icon, AzDatePipe, ClassLabelPipe, GradeWordPipe, ErrorMessagePipe, TranslatePipe],
+  imports: [ReactiveFormsModule, PageHeader, SortButton, Grade, Icon, Illustration, AzDatePipe, ClassLabelPipe, GradeWordPipe, ErrorMessagePipe, TranslatePipe],
   templateUrl: './exam-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -90,7 +95,9 @@ export class ExamList {
 
   protected readonly lessons = listResource(() => this.lessonsApi.list());
   protected readonly students = listResource(() => this.studentsApi.list());
-  protected readonly exams = listResource(() => this.examsApi.list(this.buildFilter()));
+  // Backend səhifələyir; ExamsApi bütün səhifələri birləşdirir, ona görə statistika və
+  // sıralama bütün uyğun nəticələr üzrə dəqiq qalır, cədvəl isə client tərəfdə səhifələnir.
+  protected readonly exams = listResource(() => this.examsApi.list(this.buildFilter()).pipe(map((page) => page.items)));
 
   protected readonly sortedLessons = computed(() =>
     [...this.lessons.items()].sort((a, b) => a.classNumber - b.classNumber || a.name.localeCompare(b.name, 'az')),
@@ -147,6 +154,34 @@ export class ExamList {
     { key: 'examDate', direction: 'desc' },
   );
 
+  // --- Səhifələmə (sıralanmış tam siyahı üzrə) ---
+
+  protected readonly page = signal(1);
+  protected readonly rowsPerPage = ROWS_PER_PAGE;
+
+  protected readonly pageCount = computed(() => Math.max(1, Math.ceil(this.sort.sorted().length / ROWS_PER_PAGE)));
+
+  /** Cari səhifə həmişə mövcud aralıqda saxlanılır (filtr nəticəni azaltsa belə). */
+  protected readonly currentPage = computed(() => Math.min(this.page(), this.pageCount()));
+
+  protected readonly pagedExams = computed(() => {
+    const start = (this.currentPage() - 1) * ROWS_PER_PAGE;
+    return this.sort.sorted().slice(start, start + ROWS_PER_PAGE);
+  });
+
+  /** "1–100 / 1 240" üçün: boş siyahıda `from` 0-dır. */
+  protected readonly range = computed(() => {
+    const total = this.sort.sorted().length;
+    const start = (this.currentPage() - 1) * ROWS_PER_PAGE;
+    return { from: total === 0 ? 0 : start + 1, to: Math.min(start + ROWS_PER_PAGE, total), total };
+  });
+
+  protected readonly hasPages = computed(() => this.sort.sorted().length > ROWS_PER_PAGE);
+
+  protected goToPage(next: number): void {
+    this.page.set(Math.min(Math.max(1, next), this.pageCount()));
+  }
+
   constructor() {
     // Dərs dəyişdikdə seçilmiş şagird başqa sinifdədirsə, şagird filtri sıfırlanır.
     this.filters.controls.lessonCode.valueChanges.pipe(takeUntilDestroyed()).subscribe((code) => {
@@ -160,7 +195,15 @@ export class ExamList {
     this.filters.valueChanges.pipe(debounceTime(250), takeUntilDestroyed()).subscribe(() => {
       if (this.filters.invalid) return;
       this.syncQueryParams();
+      this.page.set(1);
       this.exams.reload();
+    });
+
+    // Sütun sıralaması dəyişdikdə birinci səhifəyə qayıdılır — əks halda istifadəçi
+    // yeni sıralamanın ortasında qalardı. `untracked`: effekt yalnız sıralamadan asılıdır.
+    effect(() => {
+      this.sort.state();
+      untracked(() => this.page.set(1));
     });
 
     this.reloadAll();

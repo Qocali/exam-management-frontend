@@ -7,6 +7,7 @@
 // Models & rules
 export * from './lib/models/lesson';
 export * from './lib/models/student';
+export * from './lib/models/teacher';
 export * from './lib/models/exam';
 export * from './lib/models/problem-details';
 export * from './lib/models/auth';
@@ -32,6 +33,7 @@ export * from './lib/api/lessons-api';
 export * from './lib/api/students-api';
 export * from './lib/api/exams-api';
 export * from './lib/api/users-api';
+export * from './lib/api/teachers-api';
 
 // Auth (JWT Bearer)
 export * from './lib/auth/auth.service';
@@ -52,6 +54,8 @@ export * from './lib/forms/pipes';
 
 // UI
 export * from './lib/ui/icon';
+export * from './lib/ui/illustration';
+export * from './lib/ui/avatar';
 export * from './lib/ui/field';
 export * from './lib/ui/grade';
 export * from './lib/ui/page-header';

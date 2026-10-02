@@ -11,6 +11,8 @@ name: exam-frontend
 x-image-args: &image-args
   NODE_IMAGE: ${NODE_IMAGE:-node:22-alpine}
   NGINX_IMAGE: ${NGINX_IMAGE:-nginx:1.27-alpine}
+  # production (default) | staging — bax: .env.staging.example, .env.production.example
+  BUILD_CONFIGURATION: ${BUILD_CONFIGURATION:-production}
 
 services:
   shell:
@@ -21,16 +23,15 @@ services:
       args:
         <<: *image-args
         APP: shell
-    container_name: exam-shell
     environment:
       API_UPSTREAM: ${API_UPSTREAM:-http://host.docker.internal:5099}
-      MFE_LESSONS_URL: http://localhost:8081
-      MFE_STUDENTS_URL: http://localhost:8082
-      MFE_EXAMS_URL: http://localhost:8083
+      MFE_LESSONS_URL: ${MFE_LESSONS_URL:-http://localhost:8081}
+      MFE_STUDENTS_URL: ${MFE_STUDENTS_URL:-http://localhost:8082}
+      MFE_EXAMS_URL: ${MFE_EXAMS_URL:-http://localhost:8083}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
-      - "8080:80"
+      - "${SHELL_PORT:-8080}:80"
     depends_on: [mfe-lessons, mfe-students, mfe-exams]
 
   mfe-lessons:
@@ -41,9 +42,8 @@ services:
       args:
         <<: *image-args
         APP: mfe-lessons
-    container_name: exam-mfe-lessons
     ports:
-      - "8081:80"
+      - "${MFE_LESSONS_PORT:-8081}:80"
 
   mfe-students:
     build:
@@ -53,9 +53,8 @@ services:
       args:
         <<: *image-args
         APP: mfe-students
-    container_name: exam-mfe-students
     ports:
-      - "8082:80"
+      - "${MFE_STUDENTS_PORT:-8082}:80"
 
   mfe-exams:
     build:
@@ -65,6 +64,5 @@ services:
       args:
         <<: *image-args
         APP: mfe-exams
-    container_name: exam-mfe-exams
     ports:
-      - "8083:80"
+      - "${MFE_EXAMS_PORT:-8083}:80"

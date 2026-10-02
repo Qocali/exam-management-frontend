@@ -38,12 +38,18 @@
         <input examControl formControlName="name" autocomplete="off" />
       </exam-field>
 
-      <exam-field [label]="'lessons.field.teacherFirstName' | t" [control]="form.controls.teacherFirstName" [maxBytes]="rules.teacherNameMaxBytes">
-        <input examControl formControlName="teacherFirstName" autocomplete="off" />
-      </exam-field>
-
-      <exam-field [label]="'lessons.field.teacherLastName' | t" [control]="form.controls.teacherLastName" [maxBytes]="rules.teacherNameMaxBytes">
-        <input examControl formControlName="teacherLastName" autocomplete="off" />
+      <exam-field
+        class="sm:col-span-2"
+        [label]="'lessons.field.teacher' | t"
+        [hint]="teachers.items().length === 0 && !teachers.loading() ? ('lessons.field.teacherNone' | t) : ''"
+        [control]="form.controls.teacherId"
+      >
+        <select examControl formControlName="teacherId">
+          <option [ngValue]="null" disabled>{{ (teachers.loading() ? 'common.loading' : 'common.select') | t }}</option>
+          @for (teacher of teachers.items(); track teacher.id) {
+            <option [ngValue]="teacher.id">{{ teacher.lastName }} {{ teacher.firstName }}</option>
+          }
+        </select>
       </exam-field>
     </div>
 
