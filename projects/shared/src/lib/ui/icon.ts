@@ -21,7 +21,8 @@ export type IconName =
   | 'offline'
   | 'logout'
   | 'key'
-  | 'teacher';
+  | 'teacher'
+  | 'history';
 
 /**
  * Inline SVG ikonlar — xarici ikon fontundan asılılıq yoxdur (korporativ şəbəkədə də işləyir).
@@ -59,6 +60,10 @@ export type IconName =
         @case ('plus') { <path d="M12 5v14M5 12h14" /> }
         @case ('edit') { <path d="M4 20h4L19 9l-4-4L4 16z" /> }
         @case ('trash') { <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" /> }
+        @case ('history') {
+          <path d="M3.5 12a8.5 8.5 0 1 0 2.5-6" />
+          <path d="M3 4v4h4M12 7.5V12l3 2" />
+        }
         @case ('search') {
           <circle cx="11" cy="11" r="7" />
           <path d="m20 20-4-4" />

@@ -28,11 +28,12 @@ services:
       MFE_LESSONS_URL: ${MFE_LESSONS_URL:-http://localhost:8081}
       MFE_STUDENTS_URL: ${MFE_STUDENTS_URL:-http://localhost:8082}
       MFE_EXAMS_URL: ${MFE_EXAMS_URL:-http://localhost:8083}
+      MFE_TESTS_URL: ${MFE_TESTS_URL:-http://localhost:8084}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
       - "${SHELL_PORT:-8080}:80"
-    depends_on: [mfe-lessons, mfe-students, mfe-exams]
+    depends_on: [mfe-lessons, mfe-students, mfe-exams, mfe-tests]
 
   mfe-lessons:
     build:
@@ -66,3 +67,14 @@ services:
         APP: mfe-exams
     ports:
       - "${MFE_EXAMS_PORT:-8083}:80"
+
+  mfe-tests:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: remote
+      args:
+        <<: *image-args
+        APP: mfe-tests
+    ports:
+      - "${MFE_TESTS_PORT:-8084}:80"

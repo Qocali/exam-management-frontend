@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import {
   AuthService,
   Avatar,
@@ -124,6 +124,9 @@ export class TeachersPage {
   protected readonly teachers = listResource(() => this.api.list());
   protected readonly search = signal('');
 
+  /** Qlobal axtarışdan gələndə (?q=) axtarış sahəsi doldurulur. */
+  readonly q = input<string>();
+
   private readonly filtered = computed(() => {
     const term = this.search().trim().toLocaleLowerCase('az');
     const items = this.teachers.items();
@@ -137,6 +140,10 @@ export class TeachersPage {
   );
 
   constructor() {
+    effect(() => {
+      const q = this.q();
+      if (q !== undefined) untracked(() => this.search.set(q));
+    });
     this.teachers.reload();
   }
 

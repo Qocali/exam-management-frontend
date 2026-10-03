@@ -1,9 +1,11 @@
 import { loadRemoteModule } from '@angular-architects/native-federation';
-import { LoadChildrenCallback, Routes } from '@angular/router';
-import { LoginPage, TranslationKey, authGuard, guestGuard, roleGuard } from '@exam/shared';
+import { inject } from '@angular/core';
+import { CanMatchFn, LoadChildrenCallback, Routes } from '@angular/router';
+import { AuthService, LoginPage, STAFF_ROLES, TranslationKey, authGuard, guestGuard, roleGuard } from '@exam/shared';
 
 import { ShellLayout } from './layout/shell-layout';
 import { Home } from './pages/home/home';
+import { StudentHome } from './pages/home/student-home';
 import { NotFound } from './pages/not-found/not-found';
 import { RemoteUnavailable } from './pages/remote-unavailable/remote-unavailable';
 
@@ -21,6 +23,12 @@ function loadRemoteRoutes(remoteName: string, moduleName: TranslationKey): LoadC
       });
 }
 
+/** `false` qaytarır: şagird deyilsə növbəti (əməkdaş) route-a keçilir. */
+const isStudent: CanMatchFn = () => inject(AuthService).isStudent();
+
+/** Kataloq bölmələri yalnız əməkdaşlar üçün (backend policy: Staff); şagird ana səhifəyə yönləndirilir. */
+const staffOnly = roleGuard(...STAFF_ROLES);
+
 export const routes: Routes = [
   { path: 'login', component: LoginPage, canActivate: [guestGuard], title: 'auth.pageTitle' },
   {
@@ -30,15 +38,27 @@ export const routes: Routes = [
     canActivate: [authGuard],
     canActivateChild: [authGuard],
     children: [
-      { path: '', component: Home, title: 'module.home' },
-      { path: 'lessons', loadChildren: loadRemoteRoutes('mfe-lessons', 'module.lessons') },
-      { path: 'students', loadChildren: loadRemoteRoutes('mfe-students', 'module.students') },
-      { path: 'exams', loadChildren: loadRemoteRoutes('mfe-exams', 'module.exams') },
+      // Şagird kataloq API-lərinə baxa bilmir (backend policy: Staff) — onun üçün ayrıca ana səhifə.
+      { path: '', pathMatch: 'full', canMatch: [isStudent], component: StudentHome, title: 'module.home' },
+      { path: '', pathMatch: 'full', component: Home, title: 'module.home' },
+      // Testlər: eyni ünvan şagirdə öz testlərini, əməkdaşa idarəetməni göstərir (remote daxilində).
+      { path: 'tests', loadChildren: loadRemoteRoutes('mfe-tests', 'module.tests') },
+      { path: 'lessons', canMatch: [staffOnly], loadChildren: loadRemoteRoutes('mfe-lessons', 'module.lessons') },
+      { path: 'students', canMatch: [staffOnly], loadChildren: loadRemoteRoutes('mfe-students', 'module.students') },
+      { path: 'exams', canMatch: [staffOnly], loadChildren: loadRemoteRoutes('mfe-exams', 'module.exams') },
       {
-        // Oxumaq hamıya açıqdır; yazma düymələri yalnız Admin-ə görünür (backend: ManageCatalog).
+        // Oxumaq əməkdaşlara açıqdır; yazma düymələri yalnız Admin-ə görünür (backend: ManageCatalog).
         path: 'teachers',
+        canMatch: [staffOnly],
         loadComponent: () => import('./pages/teachers/teachers-page').then((m) => m.TeachersPage),
         title: 'module.teachers',
+      },
+      {
+        // Qlobal axtarış: müəllim, şagird və testlər (backend policy: Staff); son axtarışlar backend-də saxlanılır.
+        path: 'search',
+        canMatch: [staffOnly],
+        loadComponent: () => import('./search/search-page').then((m) => m.SearchPage),
+        title: 'search.title',
       },
       {
         path: 'users',

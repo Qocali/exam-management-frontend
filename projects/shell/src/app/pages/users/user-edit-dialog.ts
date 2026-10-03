@@ -1,17 +1,20 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Icon, RoleLabelPipe, TranslatePipe, USER_ROLES, User, UserRole, UsersApi, applyServerErrors, toApiError } from '@exam/shared';
 import { finalize } from 'rxjs';
+
+import { UserLinkFields, linksFor } from './user-link-fields';
 
 export interface UserEditDialogData {
   user: User;
 }
 
-/** Swagger: PUT /api/users/{id} (UpdateUserRequest) — rol və aktivlik. */
+/** Swagger: PUT /api/users/{id} (UpdateUserRequest) — rol, bağlı şagird/müəllim və aktivlik. */
 @Component({
   selector: 'app-user-edit-dialog',
-  imports: [ReactiveFormsModule, Icon, RoleLabelPipe, TranslatePipe],
+  imports: [ReactiveFormsModule, Icon, RoleLabelPipe, TranslatePipe, UserLinkFields],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'card block shadow-xl' },
   template: `
@@ -35,7 +38,7 @@ export interface UserEditDialogData {
 
         <fieldset class="field">
           <legend class="field-label mb-1">{{ 'users.role' | t }}</legend>
-          <div class="grid gap-2 sm:grid-cols-2">
+          <div class="grid gap-2 sm:grid-cols-3">
             @for (role of roles; track role) {
               <label class="flex cursor-pointer items-center gap-3 rounded-md border border-line p-3 has-checked:border-ink has-checked:bg-ink-soft">
                 <input type="radio" class="accent-[var(--ink)]" formControlName="role" [value]="role" />
@@ -44,6 +47,8 @@ export interface UserEditDialogData {
             }
           </div>
         </fieldset>
+
+        <app-user-link-fields [role]="role()" [studentNumber]="form.controls.studentNumber" [teacherId]="form.controls.teacherId" />
 
         <label class="flex cursor-pointer items-start justify-between gap-4 rounded-md border border-line p-3">
           <span>
@@ -77,18 +82,31 @@ export class UserEditDialog {
   protected readonly form = inject(NonNullableFormBuilder).group({
     role: [this.user.role as UserRole],
     isActive: [this.user.isActive],
+    studentNumber: [this.user.studentNumber ?? (null as number | null)],
+    teacherId: [this.user.teacherId ?? (null as number | null)],
   });
+
+  protected readonly role = toSignal(this.form.controls.role.valueChanges, { initialValue: this.form.controls.role.value });
 
   protected submit(): void {
     if (this.saving()) return;
+    const { studentNumber: studentControl } = this.form.controls;
+    // Şagird hesabı şagirdsiz qala bilməz (backend: Domain.UserStudentRequired).
+    studentControl.setErrors(this.role() === 'Student' && studentControl.value === null ? { required: true } : null);
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const { role, isActive, studentNumber, teacherId } = this.form.getRawValue();
     this.saving.set(true);
     this.serverError.set(null);
     this.api
-      .update(this.user.id, this.form.getRawValue())
+      .update(this.user.id, { role, isActive, ...linksFor(role, studentNumber, teacherId) })
       .pipe(finalize(() => this.saving.set(false)))
       .subscribe({
         next: (updated) => this.dialogRef.close(updated),
-        // 409: User.LastAdmin / User.CannotModifySelf — backend mesajı göstərilir.
+        // 409: User.LastAdmin / User.CannotModifySelf / User.StudentAlreadyLinked — backend mesajı göstərilir.
         error: (err: unknown) => this.serverError.set(applyServerErrors(this.form, toApiError(err))),
       });
   }

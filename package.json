@@ -5,13 +5,14 @@
   "description": "İmtahan proqramı — Angular micro frontend (Native Federation)",
   "scripts": {
     "ng": "ng",
-    "start": "concurrently -k -n shell,lessons,students,exams -c blue,green,magenta,cyan \"npm:start:shell\" \"npm:start:lessons\" \"npm:start:students\" \"npm:start:exams\"",
+    "start": "concurrently -k -n shell,lessons,students,exams,tests -c blue,green,magenta,cyan,yellow \"npm:start:shell\" \"npm:start:lessons\" \"npm:start:students\" \"npm:start:exams\" \"npm:start:tests\"",
     "start:shell": "ng serve shell",
     "start:lessons": "ng serve mfe-lessons",
     "start:students": "ng serve mfe-students",
     "start:exams": "ng serve mfe-exams",
-    "build": "ng build shell && ng build mfe-lessons && ng build mfe-students && ng build mfe-exams",
-    "build:staging": "ng build shell -c staging && ng build mfe-lessons -c staging && ng build mfe-students -c staging && ng build mfe-exams -c staging",
+    "start:tests": "ng serve mfe-tests",
+    "build": "ng build shell && ng build mfe-lessons && ng build mfe-students && ng build mfe-exams && ng build mfe-tests",
+    "build:staging": "ng build shell -c staging && ng build mfe-lessons -c staging && ng build mfe-students -c staging && ng build mfe-exams -c staging && ng build mfe-tests -c staging",
     "test": "ng test shared --watch=false"
   },
   "dependencies": {

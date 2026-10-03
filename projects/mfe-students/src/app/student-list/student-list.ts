@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   AuthService,
@@ -42,6 +42,9 @@ export class StudentList {
   protected readonly classFilter = signal<number | null>(null);
   protected readonly search = signal('');
 
+  /** Qlobal axtarışdan gələndə (?q=) axtarış sahəsi doldurulur. */
+  readonly q = input<string>();
+
   // Sinif filtri server tərəfində (GET /api/students?classNumber=), axtarış client tərəfində.
   protected readonly students = listResource(() => this.api.list(this.classFilter()));
 
@@ -71,6 +74,10 @@ export class StudentList {
   );
 
   constructor() {
+    effect(() => {
+      const q = this.q();
+      if (q !== undefined) untracked(() => this.search.set(q));
+    });
     this.students.reload();
   }
 

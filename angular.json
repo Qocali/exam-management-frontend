@@ -310,6 +310,80 @@
         }
       }
     },
+    "mfe-tests": {
+      "projectType": "application",
+      "root": "projects/mfe-tests",
+      "sourceRoot": "projects/mfe-tests/src",
+      "prefix": "tst",
+      "architect": {
+        "build": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {},
+          "configurations": {
+            "production": { "target": "mfe-tests:esbuild:production" },
+            "staging": { "target": "mfe-tests:esbuild:staging" },
+            "development": { "target": "mfe-tests:esbuild:development", "dev": true }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "mfe-tests:serve-original:development",
+            "rebuildDelay": 500,
+            "dev": true,
+            "port": 0
+          }
+        },
+        "esbuild": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/mfe-tests",
+            "index": "projects/mfe-tests/src/index.html",
+            "browser": "projects/mfe-tests/src/main.ts",
+            "polyfills": ["es-module-shims"],
+            "tsConfig": "projects/mfe-tests/tsconfig.app.json",
+            "styles": ["node_modules/@angular/cdk/overlay-prebuilt.css", "projects/shared/styles/global.css"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                { "type": "initial", "maximumWarning": "1MB", "maximumError": "2MB" },
+                { "type": "anyComponentStyle", "maximumWarning": "8kB", "maximumError": "16kB" }
+              ],
+              "outputHashing": "all",
+              "define": { "EXAM_ENVIRONMENT": "'production'" }
+            },
+            "staging": {
+              "budgets": [
+                { "type": "initial", "maximumWarning": "1MB", "maximumError": "2MB" },
+                { "type": "anyComponentStyle", "maximumWarning": "8kB", "maximumError": "16kB" }
+              ],
+              "outputHashing": "all",
+              "sourceMap": true,
+              "define": { "EXAM_ENVIRONMENT": "'staging'" }
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "define": { "EXAM_ENVIRONMENT": "'development'" }
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-original": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": { "buildTarget": "mfe-tests:esbuild:production" },
+            "staging": { "buildTarget": "mfe-tests:esbuild:staging" },
+            "development": { "buildTarget": "mfe-tests:esbuild:development" }
+          },
+          "defaultConfiguration": "development",
+          "options": { "port": 4204, "proxyConfig": "proxy.conf.json" }
+        }
+      }
+    },
     "shared": {
       "projectType": "library",
       "root": "projects/shared",

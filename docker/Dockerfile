@@ -41,5 +41,6 @@ COPY --from=build /src/dist/shell/browser /usr/share/nginx/html
 ENV API_UPSTREAM=http://exam-api:8080 \
     MFE_LESSONS_URL=http://localhost:8081 \
     MFE_STUDENTS_URL=http://localhost:8082 \
-    MFE_EXAMS_URL=http://localhost:8083
+    MFE_EXAMS_URL=http://localhost:8083 \
+    MFE_TESTS_URL=http://localhost:8084
 EXPOSE 80

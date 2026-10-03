@@ -33,6 +33,7 @@ export const commonMessages = defineMessages({
     'module.teachers': 'Müəllimlər',
     'module.exams': 'İmtahanlar',
     'module.users': 'İstifadəçilər',
+    'module.tests': 'Testlər',
 
     'language.label': 'Dil',
 
@@ -51,6 +52,7 @@ export const commonMessages = defineMessages({
 
     'role.Admin': 'Administrator',
     'role.Teacher': 'Müəllim',
+    'role.Student': 'Şagird',
 
     // {suffix} — Azərbaycan dilində sıra sayı şəkilçisi (ci/cı/cu/cü), digər dillərdə istifadə olunmur.
     'class.label': '{n}-{suffix} sinif',
@@ -119,6 +121,7 @@ export const commonMessages = defineMessages({
     'module.teachers': 'Teachers',
     'module.exams': 'Exams',
     'module.users': 'Users',
+    'module.tests': 'Tests',
 
     'language.label': 'Language',
 
@@ -137,6 +140,7 @@ export const commonMessages = defineMessages({
 
     'role.Admin': 'Administrator',
     'role.Teacher': 'Teacher',
+    'role.Student': 'Student',
 
     'class.label': 'Grade {n}',
 
@@ -204,6 +208,7 @@ export const commonMessages = defineMessages({
     'module.teachers': 'Учителя',
     'module.exams': 'Экзамены',
     'module.users': 'Пользователи',
+    'module.tests': 'Тесты',
 
     'language.label': 'Язык',
 
@@ -222,6 +227,7 @@ export const commonMessages = defineMessages({
 
     'role.Admin': 'Администратор',
     'role.Teacher': 'Учитель',
+    'role.Student': 'Ученик',
 
     'class.label': '{n} класс',
 

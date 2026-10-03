@@ -1,0 +1,163 @@
+<mxfile host="app.diagrams.net" agent="exam-management" version="24.7.0">
+  <diagram id="exam-architecture" name="Arxitektura">
+    <mxGraphModel dx="2000" dy="1400" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2020" pageHeight="1380" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===================== Başlıq ===================== -->
+        <mxCell id="title" value="&lt;b&gt;İmtahan proqramı — tam arxitektura&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:13px&quot;&gt;Angular 20 micro-frontend-lər (Native Federation) + ASP.NET Core 8 Web API (Clean Architecture) + SQL Server&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;fontSize=24;" vertex="1" parent="1">
+          <mxGeometry x="40" y="16" width="1920" height="56" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== İstifadəçilər ===================== -->
+        <mxCell id="users" value="&lt;b&gt;İstifadəçi — brauzer&lt;/b&gt;&lt;br&gt;Admin · Müəllim · Şagird&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;dil: az / en / ru · tema: açıq / tünd / sistem&lt;/font&gt;" style="shape=mxgraph.basic.rect;rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;arcSize=20;" vertex="1" parent="1">
+          <mxGeometry x="300" y="88" width="380" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="usericon" value="" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="250" y="96" width="34" height="62" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== FRONTEND ===================== -->
+        <mxCell id="fe" value="FRONTEND — Angular 20 · standalone · signals · zoneless · OnPush · Tailwind" style="swimlane;startSize=34;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=15;rounded=1;arcSize=2;swimlaneFillColor=#f4f8fd;" vertex="1" parent="1">
+          <mxGeometry x="40" y="190" width="900" height="900" as="geometry" />
+        </mxCell>
+
+        <mxCell id="shell" value="&lt;b&gt;shell&lt;/b&gt; — host tətbiq · :4200&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;• Layout: menyu (rola görə), dil, tema, staging zolağı&lt;br&gt;• &lt;b&gt;Qlobal axtarış&lt;/b&gt; (Ctrl+K) + /search səhifəsi + son axtarışlar&lt;br&gt;• Səhifələr: Giriş, Ana səhifə / Şagird ana səhifəsi, &lt;b&gt;Müəllimlər&lt;/b&gt;, &lt;b&gt;İstifadəçilər&lt;/b&gt; (Admin)&lt;br&gt;• Router + guard-lar: authGuard, guestGuard, roleGuard (Staff / Admin / Student)&lt;br&gt;• federation.manifest.json → remote-ların ünvanları; remote açılmasa — &quot;bölmə əlçatan deyil&quot; səhifəsi&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=12;verticalAlign=top;spacing=8;arcSize=4;" vertex="1" parent="fe">
+          <mxGeometry x="30" y="50" width="840" height="170" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mfe1" value="&lt;b&gt;mfe-lessons&lt;/b&gt; · :4201&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;Dərslər siyahısı&lt;br&gt;axtarış, sıralama&lt;br&gt;dərs forması:&lt;br&gt;müəllim seçimi (select)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=12;verticalAlign=top;spacing=8;arcSize=6;" vertex="1" parent="fe">
+          <mxGeometry x="30" y="270" width="195" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="mfe2" value="&lt;b&gt;mfe-students&lt;/b&gt; · :4202&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;Şagirdlər, avatarlar&lt;br&gt;sinif filtri (server)&lt;br&gt;sinif rəhbəri sütunu&lt;br&gt;?q= axtarışdan&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=12;verticalAlign=top;spacing=8;arcSize=6;" vertex="1" parent="fe">
+          <mxGeometry x="245" y="270" width="195" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="mfe3" value="&lt;b&gt;mfe-exams&lt;/b&gt; · :4203&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;İmtahan nəticələri&lt;br&gt;filtrlər URL-də&lt;br&gt;səhifələmə (X-Total-Count)&lt;br&gt;100 sətir / səhifə&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=12;verticalAlign=top;spacing=8;arcSize=6;" vertex="1" parent="fe">
+          <mxGeometry x="460" y="270" width="195" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="mfe4" value="&lt;b&gt;mfe-tests&lt;/b&gt; · :4204&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;&lt;u&gt;Əməkdaş:&lt;/u&gt; testlər, redaktor&lt;br&gt;(10 sual × A–E), dərc/bağla,&lt;br&gt;nəticələr; dərs filtri ?lesson=&lt;br&gt;&lt;u&gt;Şagird:&lt;/u&gt; testi işlə, nəticə&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=12;verticalAlign=top;spacing=8;arcSize=6;" vertex="1" parent="fe">
+          <mxGeometry x="675" y="270" width="195" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="shared" value="&lt;b&gt;@exam/shared&lt;/b&gt; — ümumi kitabxana (federation-da &lt;b&gt;singleton&lt;/b&gt;: bir nüsxə, eyni dil/token/tema)&lt;hr&gt;&lt;table style=&quot;width:100%;font-size:12px&quot;&gt;&lt;tr&gt;&lt;td valign=&quot;top&quot;&gt;&lt;b&gt;API client-lər&lt;/b&gt;&lt;br&gt;LessonsApi · StudentsApi&lt;br&gt;TeachersApi · ExamsApi&lt;br&gt;TestsApi · MyTestsApi&lt;br&gt;UsersApi · SearchApi&lt;/td&gt;&lt;td valign=&quot;top&quot;&gt;&lt;b&gt;Auth&lt;/b&gt;&lt;br&gt;AuthService (JWT, rol)&lt;br&gt;auth.interceptor (Bearer)&lt;br&gt;guard-lar · LoginPage&lt;br&gt;401 → avtomatik çıxış&lt;/td&gt;&lt;td valign=&quot;top&quot;&gt;&lt;b&gt;i18n&lt;/b&gt;&lt;br&gt;az / en / ru lüğətlər&lt;br&gt;kompilyasiyada yoxlanan açarlar&lt;br&gt;Accept-Language header&lt;br&gt;title strategy&lt;/td&gt;&lt;td valign=&quot;top&quot;&gt;&lt;b&gt;UI kit&lt;/b&gt;&lt;br&gt;avatar (SVG portret) · ikonlar&lt;br&gt;illustrasiyalar · dialoqlar&lt;br&gt;toast · tema · page-header&lt;br&gt;listResource · sortBy&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;div style=&quot;text-align:left;font-size:11px;margin-top:6px&quot;&gt;Modellər (Swagger ilə sinxron) · biznes qaydaları (UTF-8 bayt limitləri, sinif 1–11, qiymət 2–5) · ProblemDetails → ApiError · forma validatorları&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;verticalAlign=top;spacing=8;arcSize=4;" vertex="1" parent="fe">
+          <mxGeometry x="30" y="480" width="840" height="230" as="geometry" />
+        </mxCell>
+
+        <mxCell id="fedeploy" value="&lt;b&gt;İşə salma&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Development:&lt;/b&gt; npm start → 5 × ng serve (4200–4204); proxy /api → https://localhost:7232&lt;br&gt;&lt;b&gt;Docker:&lt;/b&gt; hər tətbiq ayrıca nginx konteyneri (8080–8084); shell nginx /api → API_UPSTREAM&lt;br&gt;&lt;b&gt;Build:&lt;/b&gt; production | staging (source map + staging zolağı) — BUILD_CONFIGURATION, .env.*.example&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=12;verticalAlign=top;spacing=8;arcSize=6;dashed=1;" vertex="1" parent="fe">
+          <mxGeometry x="30" y="740" width="840" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== BACKEND ===================== -->
+        <mxCell id="be" value="BACKEND — ASP.NET Core 8 Web API · Clean Architecture" style="swimlane;startSize=34;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=15;rounded=1;arcSize=2;swimlaneFillColor=#fffaf3;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="190" width="920" height="900" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api" value="&lt;b&gt;ExamManagement.Api&lt;/b&gt; — təqdimat qatı&lt;hr&gt;&lt;table style=&quot;width:100%;font-size:12px&quot;&gt;&lt;tr&gt;&lt;td valign=&quot;top&quot; width=&quot;36%&quot;&gt;&lt;b&gt;Controller-lər&lt;/b&gt; (/api/...)&lt;br&gt;auth · users · lessons&lt;br&gt;students · &lt;b&gt;teachers&lt;/b&gt; · exams&lt;br&gt;&lt;b&gt;tests&lt;/b&gt; · &lt;b&gt;my/tests&lt;/b&gt; · &lt;b&gt;search&lt;/b&gt;&lt;br&gt;/health · Swagger (Dev/Staging)&lt;/td&gt;&lt;td valign=&quot;top&quot; width=&quot;34%&quot;&gt;&lt;b&gt;Pipeline&lt;/b&gt;&lt;br&gt;ForwardedHeaders → Serilog&lt;br&gt;→ CORS → Localization&lt;br&gt;→ ExceptionHandler (ProblemDetails)&lt;br&gt;→ HSTS/HTTPS → JWT → RateLimiter&lt;/td&gt;&lt;td valign=&quot;top&quot;&gt;&lt;b&gt;Policy-lər&lt;/b&gt;&lt;br&gt;ManageCatalog: Admin&lt;br&gt;RecordExams: Admin, Müəllim&lt;br&gt;Staff: Admin, Müəllim&lt;br&gt;TakeTests: Şagird&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;verticalAlign=top;spacing=8;arcSize=4;" vertex="1" parent="be">
+          <mxGeometry x="30" y="50" width="860" height="170" as="geometry" />
+        </mxCell>
+
+        <mxCell id="app" value="&lt;b&gt;ExamManagement.Application&lt;/b&gt; — biznes ssenariləri&lt;hr&gt;&lt;table style=&quot;width:100%;font-size:12px&quot;&gt;&lt;tr&gt;&lt;td valign=&quot;top&quot; width=&quot;40%&quot;&gt;&lt;b&gt;Servislər&lt;/b&gt;&lt;br&gt;Lesson · Student · Teacher · Exam&lt;br&gt;Auth · User · Test · MyTest&lt;br&gt;&lt;b&gt;Search&lt;/b&gt; (axtarış + son axtarışlar)&lt;/td&gt;&lt;td valign=&quot;top&quot; width=&quot;30%&quot;&gt;&lt;b&gt;Qaydalar&lt;/b&gt;&lt;br&gt;FluentValidation&lt;br&gt;Result pattern + ErrorCodes&lt;br&gt;resx mesajlar az / en / ru&lt;/td&gt;&lt;td valign=&quot;top&quot;&gt;&lt;b&gt;Abstraksiyalar&lt;/b&gt;&lt;br&gt;I*Repository · IUnitOfWork&lt;br&gt;IPasswordHasher&lt;br&gt;IAccessTokenGenerator&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;verticalAlign=top;spacing=8;arcSize=4;" vertex="1" parent="be">
+          <mxGeometry x="30" y="260" width="860" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="domain" value="&lt;b&gt;ExamManagement.Domain&lt;/b&gt; — nüvə (asılılıqsız)&lt;hr&gt;&lt;div style=&quot;text-align:left;font-size:12px&quot;&gt;&lt;b&gt;Entity-lər:&lt;/b&gt;&lt;br&gt;Lesson · Student · &lt;b&gt;Teacher&lt;/b&gt; · Exam&lt;br&gt;User (Admin / Teacher / Student)&lt;br&gt;&lt;b&gt;Test&lt;/b&gt; (+ 10 sual) · &lt;b&gt;TestAttempt&lt;/b&gt; (+ cavablar)&lt;br&gt;&lt;b&gt;SearchHistoryEntry&lt;/b&gt;&lt;br&gt;&lt;b&gt;Qaydalar:&lt;/b&gt; Guard (UTF-8 bayt), DomainErrors,&lt;br&gt;TestGrading (düz cavab → 1–5 qiymət)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;verticalAlign=top;spacing=8;arcSize=4;" vertex="1" parent="be">
+          <mxGeometry x="30" y="450" width="410" height="210" as="geometry" />
+        </mxCell>
+
+        <mxCell id="infra" value="&lt;b&gt;ExamManagement.Infrastructure&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left;font-size:12px&quot;&gt;&lt;b&gt;EF Core 8:&lt;/b&gt; ExamDbContext (UTF-8 collation)&lt;br&gt;Repository-lər · UnitOfWork · Migrations&lt;br&gt;Seeder-lər: BootstrapAdmin, SampleData&lt;br&gt;&lt;b&gt;Təhlükəsizlik:&lt;/b&gt; JWT generator, PasswordHasher&lt;br&gt;DatabaseConnection (Local / Docker)&lt;br&gt;SchoolTimeProvider (məktəbin saat qurşağı)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;verticalAlign=top;spacing=8;arcSize=4;" vertex="1" parent="be">
+          <mxGeometry x="480" y="450" width="410" height="210" as="geometry" />
+        </mxCell>
+
+        <mxCell id="becross" value="&lt;b&gt;Konfiqurasiya və müşahidə&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left;font-size:12px&quot;&gt;appsettings.json → appsettings.{Development | Staging | Production}.json → appsettings.Local.json (gitignore, Production-da oxunmur) → env dəyişənləri&lt;br&gt;Serilog: konsol + logs/exam-api-*.json (gündəlik, 14 / 30 gün) · Health check: DB&lt;br&gt;Testlər: xUnit + NSubstitute unit testləri (401) · integration testləri (WebApplicationFactory)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=12;verticalAlign=top;spacing=8;arcSize=6;dashed=1;" vertex="1" parent="be">
+          <mxGeometry x="30" y="710" width="860" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== Baza ===================== -->
+        <mxCell id="db" value="&lt;b&gt;SQL Server&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;LocalDB (Development) · Docker mssql 2022 :1434 (Staging / Production)&lt;/font&gt;&lt;hr&gt;&lt;div style=&quot;font-size:12px&quot;&gt;Lessons · Students · &lt;b&gt;Teachers&lt;/b&gt; · Exams · Users&lt;br&gt;&lt;b&gt;Tests&lt;/b&gt; · TestQuestions · &lt;b&gt;TestAttempts&lt;/b&gt; · TestAnswers&lt;br&gt;&lt;b&gt;SearchHistory&lt;/b&gt; · __EFMigrationsHistory&lt;/div&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;verticalAlign=top;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="1150" width="560" height="190" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== Mühitlər ===================== -->
+        <mxCell id="envs" value="Mühitlər" style="swimlane;startSize=30;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=14;rounded=1;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1150" width="1260" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="env1" value="&lt;b&gt;Development&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;Frontend: ng serve 4200–4204&lt;br&gt;Backend: VS / dotnet run :7232&lt;br&gt;Swagger açıq · migrasiya + nümunə data&lt;br&gt;secret-lər: appsettings.Local.json&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;verticalAlign=top;spacing=8;arcSize=6;" vertex="1" parent="envs">
+          <mxGeometry x="20" y="44" width="390" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="env2" value="&lt;b&gt;Staging&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;Frontend: build -c staging (source map, qırmızı zolaq)&lt;br&gt;Docker portlar 9080–9084&lt;br&gt;Swagger açıq · açılışda migrasiya · token 60 dəq&lt;br&gt;nümunə data yoxdur&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;verticalAlign=top;spacing=8;arcSize=6;" vertex="1" parent="envs">
+          <mxGeometry x="435" y="44" width="390" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="env3" value="&lt;b&gt;Production&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;Frontend: build -c production · portlar 8080–8084&lt;br&gt;Swagger bağlı · migrasiya əl ilə · token 30 dəq&lt;br&gt;secret-lər yalnız env: ConnectionStrings__*,&lt;br&gt;Jwt__SigningKey, Auth__BootstrapAdmin__*&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;verticalAlign=top;spacing=8;arcSize=6;" vertex="1" parent="envs">
+          <mxGeometry x="850" y="44" width="390" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== Oxlar ===================== -->
+        <mxCell id="e-user-shell" value="HTML/JS yüklənir" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeWidth=2;strokeColor=#666666;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="users" target="shell">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e-shell-m1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#6c8ebf;dashed=1;" edge="1" parent="1" source="shell" target="mfe1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-shell-m2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#6c8ebf;dashed=1;" edge="1" parent="1" source="shell" target="mfe2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-shell-m3" value="loadRemoteModule('./routes')" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#6c8ebf;dashed=1;fontSize=11;labelBackgroundColor=#f4f8fd;" edge="1" parent="1" source="shell" target="mfe3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-shell-m4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#6c8ebf;dashed=1;" edge="1" parent="1" source="shell" target="mfe4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e-m1-sh" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;strokeColor=#82b366;" edge="1" parent="1" source="mfe1" target="shared">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-m2-sh" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;strokeColor=#82b366;" edge="1" parent="1" source="mfe2" target="shared">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-m3-sh" value="import @exam/shared" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;strokeColor=#82b366;fontSize=11;labelBackgroundColor=#f4f8fd;" edge="1" parent="1" source="mfe3" target="shared">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-m4-sh" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;strokeColor=#82b366;" edge="1" parent="1" source="mfe4" target="shared">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e-rest" value="&lt;b&gt;HTTPS REST /api/*&lt;/b&gt;&lt;br&gt;JSON · Authorization: Bearer JWT&lt;br&gt;Accept-Language: az | en | ru&lt;br&gt;← ProblemDetails (lokallaşdırılmış xətalar)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;startArrow=block;strokeWidth=3;strokeColor=#d79b00;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="shared" target="api">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1000" y="785" />
+              <mxPoint x="1000" y="325" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e-api-app" value="servisləri çağırır" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeWidth=2;strokeColor=#b85450;fontSize=11;labelBackgroundColor=#fffaf3;" edge="1" parent="1" source="api" target="app">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-app-dom" value="entity-lər" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeWidth=2;strokeColor=#9673a6;fontSize=11;labelBackgroundColor=#fffaf3;" edge="1" parent="1" source="app" target="domain">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-infra-app" value="abstraksiyaları həyata keçirir" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=0;dashed=1;strokeWidth=2;strokeColor=#6c8ebf;fontSize=11;labelBackgroundColor=#fffaf3;" edge="1" parent="1" source="infra" target="app">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-infra-dom" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#9673a6;" edge="1" parent="1" source="infra" target="domain">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-infra-db" value="&lt;b&gt;EF Core 8&lt;/b&gt;&lt;br&gt;SQL · migrasiyalar" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;startArrow=block;strokeWidth=3;strokeColor=#666666;fontSize=12;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="infra" target="db">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2005" y="745" />
+              <mxPoint x="2005" y="1245" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ===================== Açar ===================== -->
+        <mxCell id="legend" value="&lt;b&gt;Açar:&lt;/b&gt;  ━ sorğu / asılılıq    ┅ federation ilə dinamik yükləmə    ┅▷ interfeysi həyata keçirir    &lt;b&gt;qalın&lt;/b&gt; — yeni modullar: Müəllimlər, Testlər, Qlobal axtarış" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="720" y="100" width="1240" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

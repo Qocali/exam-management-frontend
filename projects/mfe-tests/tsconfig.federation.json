@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../out-tsc/mfe-tests",
+    "types": []
+  },
+  "files": [
+    "src/main.ts"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "..\\shared\\src\\public-api.ts"
+  ],
+  "exclude": [
+    "src/**/*.spec.ts"
+  ]
+}

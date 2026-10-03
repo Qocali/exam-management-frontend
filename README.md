@@ -6,6 +6,57 @@ Backend: [`D:\exam-management-service`](../exam-management-service) — API müq
 **Stack:** Angular 20 (standalone, signals, zoneless, OnPush) · TypeScript strict · Tailwind CSS v4 · Angular CDK (dialog) ·
 [Native Federation](https://www.npmjs.com/package/@angular-architects/native-federation) (esbuild əsaslı micro frontend).
 
+## Arxitektura sxemləri (draw.io)
+
+| Fayl | Məzmun |
+|---|---|
+| [`docs/architecture.drawio`](docs/architecture.drawio) | **Hazırkı arxitektura** — frontend (shell + 4 remote + `@exam/shared`), backend (Api → Application → Domain ← Infrastructure), SQL Server, mühitlər (Development / Staging / Production) |
+| [`docs/architecture-opensearch.drawio`](docs/architecture-opensearch.drawio) | **Təklif olunan dizayn — OpenSearch ilə qlobal axtarış** (hələ kodda yoxdur). Müəllim / şagird / test dəyişəndə eyni tranzaksiyada `OutboxMessages` yazılır, **ayrıca Indexer job** onu OpenSearch-ə köçürür; axtarış OpenSearch-dən yalnız ID-ləri alır, datanı isə bazadan ID-lərlə oxuyur. Frontend dəyişmir. |
+
+**Necə açmaq:** faylı https://app.diagrams.net səhifəsinə sürükləyin, və ya VS Code-da
+[Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) genişləndirməsi ilə açın.
+Sxemlər eyni zamanda backend-i ([ExamManagement-back](https://github.com/Qocali/ExamManagement-back)) əhatə edir.
+
+## İstifadəçi üçün addımlar
+
+**1. İşə salın** (ətraflı: [İşə salma](#işə-salma))
+
+```powershell
+# Backend (ayrı repo): Visual Studio-da "Development (LocalDB)" profili və ya
+dotnet run --project src/ExamManagement.Api --launch-profile https   # https://localhost:7232
+# Frontend (bu repo)
+npm install
+npm start                                                            # http://localhost:4200
+```
+
+**2. Daxil olun.** İlk administrator backend-in `appsettings.Local.json` faylındakı `Auth:BootstrapAdmin`
+(istifadəçi adı / parol) ilə yaradılır. Parolu soldakı 🔑 düyməsi ilə dəyişin.
+
+**3. Məlumatları bu ardıcıllıqla doldurun** (Admin):
+
+| # | Bölmə | Nə etməli |
+|---|---|---|
+| 1 | **Müəllimlər** | Müəllim əlavə edin (ad, soyad) — avatar avtomatik yaranır |
+| 2 | **Dərslər** | Dərs əlavə edin: kod (məs. `RIY`), ad, sinif, **müəllim (siyahıdan)** |
+| 3 | **Şagirdlər** | Şagird əlavə edin: nömrə, ad, soyad, sinif, istəyə görə **sinif rəhbəri** |
+| 4 | **İstifadəçilər** | Hesab yaradın: **Müəllim** rolu → müəllimə bağlayın; **Şagird** rolu → şagirdə bağlayın |
+| 5 | **İmtahanlar** | Nəticə qeyd edin: dərs → şagird (yalnız həmin sinif) → tarix → qiymət (2–5) |
+
+**4. Online testlər**
+
+- **Müəllim** kimi daxil olun → **Testlər** → **Yeni test**: dərs, başlıq, 10 sual × 5 variant (A–E), düzgün cavab → saxla → **Dərc et**.
+  Dərs filtri ilə testləri süzün (ünvanda saxlanılır: `/tests?lesson=RIY`).
+- **Şagird** kimi daxil olun → **Testlərim** → testi işləyin → nəticə (düzgün cavablar, qiymət) dərhal görünür.
+- Müəllim **Nəticələr** səhifəsində hər şagirdin cavablarına baxır.
+
+**5. Qlobal axtarış** (Admin, Müəllim)
+
+- Səhifənin yuxarısındakı qutu və ya **Ctrl+K** / **/** — müəllim (ad), şagird (ad və ya nömrə), test (başlıq, dərs, müəllim, testi işləmiş şagird).
+- Nəticəyə klikləyin → uyğun səhifə açılır. **Enter** → bütün nəticələr (`/search?q=…`).
+- **Son axtarışlar** boş qutuya klikləyəndə və axtarış səhifəsinin sağında görünür (hər istifadəçi üçün backend-də saxlanılır, son 10).
+
+**6. Dil və tema** — sol paneldə az / en / ru və açıq / tünd / sistem.
+
 ## Arxitektura
 
 ```
@@ -15,11 +66,11 @@ Backend: [`D:\exam-management-service`](../exam-management-service) — API müq
                        │  federation.manifest.json ─┐               │
                        └────────────┬───────────────┼───────────────┘
               loadRemoteModule('./routes')          │ /api/* (proxy)
-          ┌──────────────┬──────────┴─────┐         ▼
-          ▼              ▼                ▼     ExamManagement.Api
-   mfe-lessons     mfe-students      mfe-exams   (:5099 / :7232)
-     :4201            :4202            :4203
-          └──────────────┴────────────────┘
+          ┌──────────────┬──────────┴─────┬──────────────┐   ▼
+          ▼              ▼                ▼              ▼   ExamManagement.Api
+   mfe-lessons     mfe-students      mfe-exams      mfe-tests   (:5099 / :7232)
+     :4201            :4202            :4203          :4204
+          └──────────────┴────────────────┴──────────────┘
                  @exam/shared (singleton)
 ```
 
@@ -29,6 +80,7 @@ Backend: [`D:\exam-management-service`](../exam-management-service) — API müq
 | `projects/mfe-lessons` | 4201 | Dərslər: siyahı, axtarış, sinif filtri, sıralama, əlavə/redaktə/silmə |
 | `projects/mfe-students` | 4202 | Şagirdlər: siyahı, axtarış, sinif filtri, sıralama, əlavə/redaktə/silmə |
 | `projects/mfe-exams` | 4203 | İmtahanlar: filtrlər (URL ilə sinxron), statistika, əlavə/redaktə/silmə |
+| `projects/mfe-tests` | 4204 | Onlayn testlər (10 sual × 5 variant). Müəllim/admin: siyahı, redaktor, dərc et/bağla, nəticələr. Şagird: "Testlərim", testi vermək (bir dəfə), nəticə və düzgün cavablar |
 | `projects/shared` | — | `@exam/shared`: modellər, API client-lər, validatorlar, UI komponentləri, dizayn sistemi |
 | `design/index.html` | — | Statik interaktiv dizayn prototipi (nümunə məlumat, backend-siz) |
 
@@ -158,11 +210,11 @@ Backend bütün qaydaları yenə yoxlayır; UI istifadəçini əvvəlcədən yö
 
 ```powershell
 npm install
-npm start          # shell + 3 remote paralel
+npm start          # shell + 4 remote paralel
 ```
 
 - Tətbiq: http://localhost:4200
-- Remote-lar ayrıca: http://localhost:4201, :4202, :4203
+- Remote-lar ayrıca: http://localhost:4201, :4202, :4203, :4204
 
 `/api` sorğuları `proxy.conf.json` ilə `https://localhost:7232`-yə yönləndirilir (`secure: false` yalnız lokal dev sertifikatı üçündür).
 Backend-in http portu (`5099`) https-ə yönləndirdiyi üçün birbaşa https istifadə olunur.
@@ -181,7 +233,7 @@ npm test           # @exam/shared unit testləri
 Build konteyner daxilində gedir, host-da Node/npm lazım deyil:
 
 ```powershell
-docker compose up -d --build      # shell :8080, remote-lar :8081–8083
+docker compose up -d --build      # shell :8080, remote-lar :8081–8084
 ```
 
 Konteynerə `node` və `nginx` baza image-ləri, həmçinin npm registry-yə çıxış lazımdır.

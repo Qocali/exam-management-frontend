@@ -9,7 +9,8 @@ cat > "$MANIFEST" <<EOF
 {
   "mfe-lessons": "${MFE_LESSONS_URL%/}/remoteEntry.json",
   "mfe-students": "${MFE_STUDENTS_URL%/}/remoteEntry.json",
-  "mfe-exams": "${MFE_EXAMS_URL%/}/remoteEntry.json"
+  "mfe-exams": "${MFE_EXAMS_URL%/}/remoteEntry.json",
+  "mfe-tests": "${MFE_TESTS_URL%/}/remoteEntry.json"
 }
 EOF
 

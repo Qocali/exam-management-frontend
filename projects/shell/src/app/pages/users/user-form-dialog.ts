@@ -1,5 +1,6 @@
 import { DialogRef } from '@angular/cdk/dialog';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   AuthRules,
@@ -21,10 +22,12 @@ import {
 } from '@exam/shared';
 import { finalize } from 'rxjs';
 
+import { UserLinkFields, linksFor } from './user-link-fields';
+
 /** Swagger: POST /api/users (CreateUserRequest). */
 @Component({
   selector: 'app-user-form-dialog',
-  imports: [ReactiveFormsModule, Field, FieldControl, Icon, RoleLabelPipe, TranslatePipe],
+  imports: [ReactiveFormsModule, Field, FieldControl, Icon, RoleLabelPipe, TranslatePipe, UserLinkFields],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'card block shadow-xl' },
   template: `
@@ -54,7 +57,7 @@ import { finalize } from 'rxjs';
 
         <fieldset class="field">
           <legend class="field-label mb-1">{{ 'users.role' | t }}</legend>
-          <div class="grid gap-2 sm:grid-cols-2">
+          <div class="grid gap-2 sm:grid-cols-3">
             @for (role of roles; track role) {
               <label
                 class="flex cursor-pointer items-start gap-3 rounded-md border border-line p-3 has-checked:border-ink has-checked:bg-ink-soft"
@@ -68,6 +71,8 @@ import { finalize } from 'rxjs';
             }
           </div>
         </fieldset>
+
+        <app-user-link-fields [role]="role()" [studentNumber]="form.controls.studentNumber" [teacherId]="form.controls.teacherId" />
 
         <p class="text-xs text-muted">{{ 'users.form.passwordNote' | t }}</p>
       </div>
@@ -88,6 +93,7 @@ export class UserFormDialog {
   protected readonly roleHints: Readonly<Record<UserRole, TranslationKey>> = {
     Admin: 'users.form.roleHint.Admin',
     Teacher: 'users.form.roleHint.Teacher',
+    Student: 'users.form.roleHint.Student',
   };
   protected readonly userNameHint = computed(() =>
     translate('users.form.userNameHint', { min: AuthRules.userNameMinLength, max: AuthRules.userNameMaxLength }),
@@ -117,24 +123,31 @@ export class UserFormDialog {
       ],
     ],
     role: this.fb.control<UserRole>('Teacher'),
+    studentNumber: this.fb.control<number | null>(null),
+    teacherId: this.fb.control<number | null>(null),
   });
+
+  protected readonly role = toSignal(this.form.controls.role.valueChanges, { initialValue: this.form.controls.role.value });
 
   protected submit(): void {
     if (this.saving()) return;
+    const { studentNumber: studentControl } = this.form.controls;
+    // Şagird hesabı şagirdsiz yaradılmır (backend: Domain.UserStudentRequired).
+    studentControl.setErrors(this.role() === 'Student' && studentControl.value === null ? { required: true } : null);
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
-    const { userName, password, role } = this.form.getRawValue();
+    const { userName, password, role, studentNumber, teacherId } = this.form.getRawValue();
     this.saving.set(true);
     this.serverError.set(null);
     this.api
-      .create({ userName: userName.trim(), password, role })
+      .create({ userName: userName.trim(), password, role, ...linksFor(role, studentNumber, teacherId) })
       .pipe(finalize(() => this.saving.set(false)))
       .subscribe({
         next: (user) => this.dialogRef.close(user),
-        // 409: istifadəçi adı artıq mövcuddur.
+        // 409: istifadəçi adı artıq mövcuddur və ya şagirdin artıq hesabı var.
         error: (err: unknown) => this.serverError.set(applyServerErrors(this.form, toApiError(err))),
       });
   }

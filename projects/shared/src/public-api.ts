@@ -9,6 +9,8 @@ export * from './lib/models/lesson';
 export * from './lib/models/student';
 export * from './lib/models/teacher';
 export * from './lib/models/exam';
+export * from './lib/models/test';
+export * from './lib/models/search';
 export * from './lib/models/problem-details';
 export * from './lib/models/auth';
 export * from './lib/rules/school-rules';
@@ -34,6 +36,8 @@ export * from './lib/api/students-api';
 export * from './lib/api/exams-api';
 export * from './lib/api/users-api';
 export * from './lib/api/teachers-api';
+export * from './lib/api/tests-api';
+export * from './lib/api/search-api';
 
 // Auth (JWT Bearer)
 export * from './lib/auth/auth.service';

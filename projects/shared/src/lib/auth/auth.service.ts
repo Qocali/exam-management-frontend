@@ -43,6 +43,10 @@ export class AuthService {
   readonly canManageCatalog = computed(() => this.role() === 'Admin');
   /** İmtahan nəticələri (backend policy: RecordExams). */
   readonly canRecordExams = computed(() => this.role() === 'Admin' || this.role() === 'Teacher');
+  /** Məktəb əməkdaşı (Admin, Teacher): kataloq məlumatları və testlərin idarəsi (backend policy: Staff). */
+  readonly isStaff = computed(() => this.role() === 'Admin' || this.role() === 'Teacher');
+  /** Şagird: yalnız öz testləri və nəticələri (backend policy: TakeTests). */
+  readonly isStudent = computed(() => this.role() === 'Student');
 
   /** Son çıxışın səbəbi — giriş səhifəsində izah üçün. */
   readonly lastSignOutReason = signal<SignOutReason | null>(null);

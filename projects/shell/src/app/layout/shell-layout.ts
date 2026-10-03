@@ -18,6 +18,7 @@ import {
 import { filter } from 'rxjs';
 
 import { APP_ENVIRONMENT } from '../environment';
+import { GlobalSearch } from '../search/global-search';
 import { ChangePasswordDialog } from './change-password-dialog';
 
 interface NavItem {
@@ -36,7 +37,7 @@ interface ThemeOption {
 /** Daxil olmuş istifadəçinin çərçivəsi: naviqasiya, tema, istifadəçi bloku. */
 @Component({
   selector: 'app-shell-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icon, LanguageSwitcher, TranslatePipe],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icon, LanguageSwitcher, TranslatePipe, GlobalSearch],
   templateUrl: './shell-layout.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block min-h-full' },
@@ -50,17 +51,26 @@ export class ShellLayout {
   private readonly dialog = inject(ExamDialog);
   private readonly notify = inject(NotificationService);
 
-  // İstifadəçilər bölməsi yalnız administratora görünür (backend: ManageCatalog policy).
-  protected readonly navItems = computed<NavItem[]>(() => [
-    { path: '/', labelKey: 'module.home', icon: 'home', exact: true },
-    { path: '/lessons', labelKey: 'module.lessons', icon: 'book', exact: false },
-    { path: '/students', labelKey: 'module.students', icon: 'users', exact: false },
-    { path: '/teachers', labelKey: 'module.teachers', icon: 'teacher', exact: false },
-    { path: '/exams', labelKey: 'module.exams', icon: 'check', exact: false },
-    ...(this.auth.canManageCatalog()
-      ? [{ path: '/users', labelKey: 'module.users', icon: 'key', exact: false } satisfies NavItem]
-      : []),
-  ]);
+  // Şagird yalnız öz testlərini görür (backend: TakeTests); kataloq bölmələri əməkdaşlar üçündür (Staff),
+  // istifadəçilər bölməsi isə yalnız administratora (ManageCatalog).
+  protected readonly navItems = computed<NavItem[]>(() =>
+    this.auth.isStudent()
+      ? [
+          { path: '/', labelKey: 'module.home', icon: 'home', exact: true },
+          { path: '/tests', labelKey: 'tests.my.title', icon: 'list', exact: false },
+        ]
+      : [
+          { path: '/', labelKey: 'module.home', icon: 'home', exact: true },
+          { path: '/lessons', labelKey: 'module.lessons', icon: 'book', exact: false },
+          { path: '/students', labelKey: 'module.students', icon: 'users', exact: false },
+          { path: '/teachers', labelKey: 'module.teachers', icon: 'teacher', exact: false },
+          { path: '/exams', labelKey: 'module.exams', icon: 'check', exact: false },
+          { path: '/tests', labelKey: 'module.tests', icon: 'list', exact: false },
+          ...(this.auth.canManageCatalog()
+            ? [{ path: '/users', labelKey: 'module.users', icon: 'key', exact: false } satisfies NavItem]
+            : []),
+        ],
+  );
 
   protected readonly themeOptions: readonly ThemeOption[] = [
     { value: 'light', labelKey: 'shell.theme.light', icon: 'sun' },

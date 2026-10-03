@@ -1,9 +1,12 @@
 import { translate } from '../i18n/i18n';
 
 /** Swagger: UserRole (string enum). */
-export type UserRole = 'Admin' | 'Teacher';
+export type UserRole = 'Admin' | 'Teacher' | 'Student';
 
-export const USER_ROLES: readonly UserRole[] = ['Admin', 'Teacher'];
+export const USER_ROLES: readonly UserRole[] = ['Admin', 'Teacher', 'Student'];
+
+/** Məktəb əməkdaşları: məlumatlara baxış və testlərin idarəsi (backend policy: Staff). */
+export const STAFF_ROLES: readonly UserRole[] = ['Admin', 'Teacher'];
 
 /** Rolun cari dildə adı. Şablonda: `{{ role | roleLabel }}`. */
 export function roleLabel(role: UserRole | null | undefined): string {
@@ -31,6 +34,10 @@ export interface CurrentUser {
   id: number;
   userName: string;
   role: UserRole;
+  /** Şagird hesabının şagirdi (Student rolu). */
+  studentNumber: number | null;
+  /** Müəllim hesabının müəllimi (Teacher rolu) — testləri idarə etmək üçün lazımdır. */
+  teacherId: number | null;
 }
 
 /** GET /api/users */
@@ -39,6 +46,8 @@ export interface User {
   userName: string;
   role: UserRole;
   isActive: boolean;
+  studentNumber: number | null;
+  teacherId: number | null;
 }
 
 /** POST /api/users */
@@ -46,12 +55,19 @@ export interface CreateUserRequest {
   userName: string;
   password: string;
   role: UserRole;
+  /** Student rolu üçün məcburidir. */
+  studentNumber?: number | null;
+  /** Yalnız Teacher rolu üçün (məcburi deyil). */
+  teacherId?: number | null;
 }
 
 /** PUT /api/users/{id} — rol və aktivlik (Admin; özünü və son aktiv admini dəyişmək olmaz). */
 export interface UpdateUserRequest {
   role: UserRole;
   isActive: boolean;
+  /** Göndərildiyi kimi saxlanılır (null — bağlantı yoxdur). */
+  studentNumber: number | null;
+  teacherId: number | null;
 }
 
 /** POST /api/users/{id}/password (Admin) */
